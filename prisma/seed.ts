@@ -1,6 +1,6 @@
 // prisma/seed.ts
 import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../src/generated/prisma';
 
 const prisma = new PrismaClient();
 
@@ -27,7 +27,7 @@ type FixedProduct = {
   stock: number;
   imageUrl: string;
   category: string; // slug kategorii
-  brand: string;    // slug marki
+  brand: string;    // slug brandu
   description?: string;
 };
 
@@ -71,6 +71,8 @@ const PRODUCTS: FixedProduct[] = [
   { sku: 'WEBCAM-LOGI-C920',  name: 'Logitech C920',        slug: 'logitech-c920',     price: 79.99,  stock: 25, imageUrl: '/images/products/webcam-1.jpg',  category: 'webcam',  brand: 'logitech', description: 'HD Pro Webcam with 1080p video quality.' },
 ];
 
+
+
 /* ========= Helpers ========= */
 const money = (n: number) => Number((Math.round(n * 100) / 100).toFixed(2));
 
@@ -84,10 +86,9 @@ function buildProductBase(
   const slug = `${brand.slug}-${category.slug}-${i}`;
   const price = money(79 + (i % 7) * 20 + Math.random() * 30);
   const stock = 10 + ((i * 3) % 25);
-  const imageUrl = `/images/products/${category.slug}-${(i % 5) + 1}.jpg`;
+  const imageUrl = `https://res.cloudinary.com/damzxycku/image/upload/v1755723011/products/${category.slug}-${(i % 5) + 1}.png`;
   return { sku, name, slug, price, stock, imageUrl };
 }
-
 /* ========= Seed: marki i kategorie ========= */
 async function seedBrands() {
   for (const b of BRANDS) {
@@ -109,13 +110,13 @@ async function seedCategories() {
   }
 }
 
-/* ========= Produkty z Figmy ========= */
+/* ========= Produkty stałe z Figmy ========= */
 async function getLookups() {
-  const brands: { id: string; slug: string }[] = await prisma.brand.findMany({ select: { id: true, slug: true } });
-  const categories: { id: string; slug: string }[] = await prisma.category.findMany({ select: { id: true, slug: true } });
+  const brands = await prisma.brand.findMany({ select: { id: true, slug: true } });
+  const categories = await prisma.category.findMany({ select: { id: true, slug: true } });
 
-  const brandBySlug = new Map<string, string>(brands.map((b) => [b.slug, b.id]));
-  const catBySlug   = new Map<string, string>(categories.map((c) => [c.slug, c.id]));
+  const brandBySlug = new Map(brands.map((b) => [b.slug, b.id]));
+  const catBySlug   = new Map(categories.map((c) => [c.slug, c.id]));
   return { brandBySlug, catBySlug };
 }
 
@@ -197,7 +198,7 @@ async function seedUserWithAddress() {
       email: 'test@example.com',
       firstName: 'Test',
       lastName: 'User',
-      passwordHash: 'plain:password', // demo; w produkcji użyj bcrypta
+      passwordHash: 'plain:password', 
       addresses: {
         create: [
           { line1: 'Tadeusza Konicza 7', city: 'Zielona Góra', postal: '65-001', country: 'PL', isDefault: true },
@@ -208,21 +209,25 @@ async function seedUserWithAddress() {
   });
 }
 
+/* ========= Walidacja wyników (liczniki) ========= */
+async function printSummary() {
+  const cats = await prisma.category.findMany({ select: { id: true, slug: true, name: true } });
+  for (const c of cats) {
+    const cnt = await prisma.product.count({ where: { categoryId: c.id } });
+    console.log(`Kategoria ${c.slug} (${c.name}) → ${cnt} produktów`);
+  }
+}
+
 /* ========= Main ========= */
 async function main() {
   console.log('Seeding...');
-
-  // Cleanup dawnych kategorii z kursu
-  await prisma.$transaction([
-    prisma.product.deleteMany({ where: { category: { slug: { in: ['sneakers', 'accessories', 'outerwear'] } } } }),
-    prisma.category.deleteMany({ where: { slug: { in: ['sneakers', 'accessories', 'outerwear'] } } }),
-  ]);
 
   await seedBrands();
   await seedCategories();
   await seedFixedProducts();
   await ensureMinFivePerCategory();
   await seedUserWithAddress();
+  await printSummary();
 
   console.log('Seeding finished.');
 }

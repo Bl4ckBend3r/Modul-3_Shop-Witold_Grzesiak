@@ -1,4 +1,4 @@
-
+"use client";
 import React, { forwardRef } from "react";
 import clsx from "clsx";
 
@@ -9,28 +9,28 @@ export interface ToggleProps
   checked: boolean;
   onChange: (next: boolean) => void;
   size?: ToggleSize;
-  label?: string; // for accessibility (visually hidden)
+  label?: string; 
 }
 
 const SIZES: Record<
   ToggleSize,
   {
-    wrapper: string; // dimensions + padding
-    knob: string; // dimensions
+    wrapper: string; 
+    knob: string; 
   }
 > = {
   m: {
-    // 68x36, p-4px
+   
     wrapper:
       "w-[68px] h-[36px] px-1 py-1.5 sm:p-1.5 [padding:4px] rounded-[30px]",
-    // 28x28
+  
     knob: "w-[28px] h-[28px] rounded-full",
   },
   s: {
-    // 52x28, p-2px
+
     wrapper:
       "w-[52px] h-[28px] [padding:2px] rounded-[30px]",
-    // 24x24
+    
     knob: "w-[24px] h-[24px] rounded-full",
   },
 };

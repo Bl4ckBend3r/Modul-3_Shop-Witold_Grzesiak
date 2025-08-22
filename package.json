@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "list:products": "ts-node -r dotenv/config scripts/list-products.ts",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -14,15 +15,18 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init",
     "prisma:studio": "prisma studio",
-    "prisma:seed": "ts-node prisma/seed.ts",
-    "dev:all": "npm run db:up && npm run db:wait && npm run prisma:generate && npm run prisma:migrate && next dev"
+    "prisma:seed": "ts-node -r dotenv/config prisma/seed.ts",
+    "dev:all": "npm run db:up && npm run db:wait && npm run prisma:generate && npm run prisma:migrate && next dev",
+    "upload:images": "node ./scripts/upload.cjs"
   },
   "dependencies": {
     "@prisma/client": "^6.14.0",
+    "cloudinary": "^2.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.1",
     "lucide-react": "^0.540.0",
     "next": "15.4.6",
+    "next-cloudinary": "^6.16.0",
     "pg": "^8.16.3",
     "react": "19.1.0",
     "react-dom": "19.1.0"
@@ -34,6 +38,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
+    "cross-env": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
     "postcss": "^8.5.6",

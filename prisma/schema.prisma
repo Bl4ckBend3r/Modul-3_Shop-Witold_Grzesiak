@@ -1,13 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-// Datasource & generator – zostaw swoje ustawienia DATABASE_URL (PostgreSQL)
-
 generator client {
   provider = "prisma-client-js"
+//  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -15,6 +8,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/**
+ * ===== ENUMS =====
+ */
 enum OrderStatus {
   PENDING
   PAID
@@ -23,6 +19,9 @@ enum OrderStatus {
   CANCELED
 }
 
+/**
+ * ===== MODELS =====
+ */
 model User {
   id           String  @id @default(cuid())
   email        String  @unique
@@ -31,7 +30,6 @@ model User {
   passwordHash String
   phone        String? @db.VarChar(32)
 
-  // Relacje
   addresses Address[]
   orders    Order[]
 
@@ -42,20 +40,20 @@ model User {
 }
 
 model Address {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  line1   String
-  line2   String?
-  city    String
-  postal  String
-  country String
-
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  line1     String
+  line2     String?
+  city      String
+  postal    String
+  country   String
   isDefault Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model Brand {
@@ -89,31 +87,30 @@ model Category {
 }
 
 model Product {
-  id          String         @id @default(cuid())
-  sku         String         @unique
+  id          String  @id @default(cuid())
+  sku         String  @unique // używane w seedzie
   name        String
-  slug        String         @unique
+  slug        String  @unique
   description String?
-  price       Decimal        @db.Decimal(10, 2)
-  stock       Int            @default(0)
-  imageUrl    String?
-  images      ProductImage[]
+  price       Decimal @db.Decimal(10, 2)
+  stock       Int
+  imageUrl    String
 
-  // FK
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 
   brandId String?
   brand   Brand?  @relation(fields: [brandId], references: [id], onDelete: SetNull)
 
-  // Statystyki / sortowania
+  images     ProductImage[]
+  orderItems OrderItem[]
+
   soldCount   Int   @default(0)
   ratingAvg   Float @default(0)
   ratingCount Int   @default(0)
 
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  OrderItem OrderItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([name])
   @@index([categoryId])
@@ -131,6 +128,9 @@ model ProductImage {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  // @@map("ProductImage") // użyj, jeśli chcesz wymusić nazwę tabeli
+
+  @@index([productId])
 }
 
 model Order {
@@ -140,10 +140,8 @@ model Order {
 
   status      OrderStatus @default(PENDING)
   totalAmount Decimal     @db.Decimal(10, 2)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
 
-  // Snapshot adresu przy składaniu zamówienia (żeby nie zależał od późniejszych zmian Address)
+  // snapshot adresu przy zamówieniu
   shipName    String?
   shipLine1   String?
   shipLine2   String?
@@ -152,6 +150,9 @@ model Order {
   shipCountry String?
 
   items OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([createdAt])

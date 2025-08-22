@@ -1,0 +1,142 @@
+[
+  {
+    "type": "brand",
+    "filename": "AOC Logo.png",
+    "basenameSlug": "aoc",
+    "public_id": "brand/aoc",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823720/brand/aoc.png"
+  },
+  {
+    "type": "brand",
+    "filename": "JBL Logo.png",
+    "basenameSlug": "jbl",
+    "public_id": "brand/jbl",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823720/brand/jbl.png"
+  },
+  {
+    "type": "brand",
+    "filename": "Logitech Logo.png",
+    "basenameSlug": "logitech",
+    "public_id": "brand/logitech",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823721/brand/logitech.png"
+  },
+  {
+    "type": "brand",
+    "filename": "Razer Logo.png",
+    "basenameSlug": "razer",
+    "public_id": "brand/razer",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823722/brand/razer.png"
+  },
+  {
+    "type": "brand",
+    "filename": "Rexus Logo.png",
+    "basenameSlug": "rexus",
+    "public_id": "brand/rexus",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823722/brand/rexus.png"
+  },
+  {
+    "type": "brand",
+    "filename": "ROG Logo.png",
+    "basenameSlug": "rog",
+    "public_id": "brand/rog",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823723/brand/rog.png"
+  },
+  {
+    "type": "payment",
+    "filename": "applepay.png",
+    "basenameSlug": "applepay",
+    "public_id": "payment/applepay",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823724/payment/applepay.png"
+  },
+  {
+    "type": "payment",
+    "filename": "googlepay.png",
+    "basenameSlug": "googlepay",
+    "public_id": "payment/googlepay",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823726/payment/googlepay.png"
+  },
+  {
+    "type": "payment",
+    "filename": "mastercard.png",
+    "basenameSlug": "mastercard",
+    "public_id": "payment/mastercard",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823727/payment/mastercard.png"
+  },
+  {
+    "type": "payment",
+    "filename": "paypal.png",
+    "basenameSlug": "paypal",
+    "public_id": "payment/paypal",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823727/payment/paypal.png"
+  },
+  {
+    "type": "payment",
+    "filename": "visa.png",
+    "basenameSlug": "visa",
+    "public_id": "payment/visa",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823728/payment/visa.png"
+  },
+  {
+    "type": "products",
+    "filename": "aoc-24g2e.png",
+    "basenameSlug": "aoc-24g2e",
+    "public_id": "products/aoc-24g2e",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755722998/products/aoc-24g2e.png"
+  },
+  {
+    "type": "products",
+    "filename": "jbl-tune-500.png",
+    "basenameSlug": "jbl-tune-500",
+    "public_id": "products/jbl-tune-500",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755722999/products/jbl-tune-500.png"
+  },
+  {
+    "type": "products",
+    "filename": "logitech-c920.png",
+    "basenameSlug": "logitech-c920",
+    "public_id": "products/logitech-c920",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823733/products/logitech-c920.png"
+  },
+  {
+    "type": "products",
+    "filename": "logitech-g213-prodigy.png",
+    "basenameSlug": "logitech-g213-prodigy",
+    "public_id": "products/logitech-g213-prodigy",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755723001/products/logitech-g213-prodigy.png"
+  },
+  {
+    "type": "products",
+    "filename": "logitech-g502-hero.png",
+    "basenameSlug": "logitech-g502-hero",
+    "public_id": "products/logitech-g502-hero",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823734/products/logitech-g502-hero.png"
+  },
+  {
+    "type": "products",
+    "filename": "razer-huntsman-elite.png",
+    "basenameSlug": "razer-huntsman-elite",
+    "public_id": "products/razer-huntsman-elite",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755723009/products/razer-huntsman-elite.png"
+  },
+  {
+    "type": "products",
+    "filename": "rexus-kierra-x16.png",
+    "basenameSlug": "rexus-kierra-x16",
+    "public_id": "products/rexus-kierra-x16",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823736/products/rexus-kierra-x16.png"
+  },
+  {
+    "type": "products",
+    "filename": "rog-swift-pg259qn.png",
+    "basenameSlug": "rog-swift-pg259qn",
+    "public_id": "products/rog-swift-pg259qn",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823737/products/rog-swift-pg259qn.png"
+  },
+  {
+    "type": "products",
+    "filename": "sony-wh-ch510.png",
+    "basenameSlug": "sony-wh-ch510",
+    "public_id": "products/sony-wh-ch510",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823738/products/sony-wh-ch510.png"
+  }
+]

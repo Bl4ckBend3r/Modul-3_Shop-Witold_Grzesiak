@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Separator from "./Separator";
 
 const columns = [
   {
@@ -40,7 +41,8 @@ const columns = [
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-neutral-50 border-t border-neutral-200">
+    <footer className="w-full bg-[#1a1a1a] ">
+      
       <div
         className="
       mx-auto w-full max-w-[1440px]
@@ -49,8 +51,8 @@ export default function Footer() {
       pb-[clamp(48px,8vw,140px)] lg:pb-[clamp(64px,8vw,160px)] lg:pt-[clamp(64px,8vw,160px)] lg:py-[clamp(64px,8vw,160px)] lg:gap-6
       
     "
-      >
-        <div className="flex flex-col-2  lg:flex-row lg:items-start lg:justify-between">
+      ><Separator></Separator>
+        <div className="pt-[140px] flex flex-col-2 pb-[140px] lg:flex-row lg:items-start lg:justify-between">
           {/* LEWY BLOK: 531.75 x 214 */}
           <div className="w-full  max-w-[531.75px] lg:basis-[531.75px] lg:shrink-0 ">
             <div className="mb-3 text-2xl font-semibold tracking-[-0.01em] pb-[24px] text-[36px]">
@@ -111,7 +113,7 @@ export default function Footer() {
         </div>
 
         {/* delikatny separator jak w projekcie */}
-        <div className="mt-8 h-px w-full bg-neutral-200" />
+        <Separator></Separator>
       </div>
     </footer>
   );

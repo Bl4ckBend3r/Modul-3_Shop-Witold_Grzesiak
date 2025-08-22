@@ -74,12 +74,7 @@ const root = cx(
           disabled && `border-[${COLORS.disabled}] text-[${COLORS.disabled}]`,
         )
       : // text
-        cx(
-          "bg-transparent border-0",
-          `text-[${COLORS.base}]`,
-          !disabled && `hover:text-[${COLORS.hover}] active:text-[${COLORS.pressed}]`,
-          disabled && `text-[${COLORS.disabled}]`
-        );
+         cx("bg-transparent border-0", disabled && `text-[${COLORS.disabled}]`);
 
   // Typografia
   const type = cx(sz.text, sz.leading);

@@ -36,11 +36,14 @@ export default async function ProductsPage({ searchParams }: Props) {
   const base = await getBase();
 
   // 1) Kategorie do filtra
-  let categories: Category[] = [];
-  try {
-    const cr = await fetch(`${base}/api/categories`, { cache: "no-store" });
-    if (cr.ok) categories = await cr.json();
-  } catch {}
+let categories: Category[] = [];
+try {
+  const cr = await fetch(`${base}/api/categories`, { cache: "no-store" });
+  if (cr.ok) {
+    const json = await cr.json();
+    categories = Array.isArray(json) ? json : (json?.data ?? []);
+  }
+} catch {}
 
   // 2) Zbuduj query do /api/products
   const qs = new URLSearchParams();

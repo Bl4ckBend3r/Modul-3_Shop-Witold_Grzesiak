@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-//  output   = "../src/generated/prisma"
+  //  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -25,11 +25,13 @@ enum OrderStatus {
 model User {
   id           String  @id @default(cuid())
   email        String  @unique
+  country      String?
   firstName    String
   lastName     String?
   passwordHash String
   phone        String? @db.VarChar(32)
 
+  cartItems CartItem[]
   addresses Address[]
   orders    Order[]
 
@@ -88,7 +90,7 @@ model Category {
 
 model Product {
   id          String  @id @default(cuid())
-  sku         String  @unique // używane w seedzie
+  sku         String  @unique
   name        String
   slug        String  @unique
   description String?
@@ -109,8 +111,9 @@ model Product {
   ratingAvg   Float @default(0)
   ratingCount Int   @default(0)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  cartItems CartItem[]
 
   @@index([name])
   @@index([categoryId])
@@ -174,4 +177,39 @@ model OrderItem {
 
   @@index([orderId])
   @@index([productId])
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  userId    String
+  productId String
+  qty       Int     @default(1)
+  selected  Boolean @default(true)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Cart      Cart?    @relation(fields: [cartId], references: [id])
+  cartId    String?
+
+  @@unique([userId, productId]) // używamy tego w upsert
+  @@index([userId])
+  @@index([productId])
+}
+
+enum CartStatus {
+  OPEN
+  ORDERED
+  CANCELLED
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  status    CartStatus @default(OPEN)
+  currency  String     @default("USD")
+  items     CartItem[]
 }

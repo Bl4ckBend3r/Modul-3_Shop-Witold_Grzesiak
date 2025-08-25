@@ -1,6 +1,9 @@
 // prisma/seed.ts
 import 'dotenv/config';
 import { PrismaClient } from '../src/generated/prisma';
+import { cloudMap } from '@/lib/cloudinary-map';
+
+
 
 const prisma = new PrismaClient();
 

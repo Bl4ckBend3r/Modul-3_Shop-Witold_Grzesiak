@@ -9,10 +9,11 @@ type ApiCategory = {
 };
 
 async function getCategories(): Promise<ApiCategory[]> {
-  const res = await fetch("/api/categories", { cache: "no-store" });
+  const res = await fetch("http://localhost:3000/api/categories", { cache: "no-store" });
   if (!res.ok) throw new Error("Nie udało się pobrać kategorii");
-  return res.json();
+  return (await res.json()).data;
 }
+
 
 export default async function CategoriesPage() {
   const categories = await getCategories();

@@ -17,13 +17,12 @@ type Props = {
   error?: string;
 
   leftIcon?: ReactNode;
-  /** Prosty tekst zamiast dropdownu */
   rightText?: string;
-  /** Dowolny element (np. Dropdown) jako prawa część */
   rightNode?: React.ReactNode;
 
   className?: string;
-} & Omit<InputHTMLAttributes<HTMLInputElement>, "size">;
+ inputType?: InputHTMLAttributes<HTMLInputElement>["type"];
+} & Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "type">;
 
 const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(" ");
 

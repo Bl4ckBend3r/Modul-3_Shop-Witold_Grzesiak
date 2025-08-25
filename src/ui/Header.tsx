@@ -1,5 +1,4 @@
 "use client";
-
 import * as React from "react";
 import Button from "@/ui/Button";
 import Input from "@/ui/InputField";
@@ -53,7 +52,7 @@ export function Header({
   const handleChange: (v: string) => void =
     onSearchChange ?? ((v) => setInternalSearch(v));
   const value = search ?? internalSearch;
-
+  const router = useRouter();
   return (
     <header
       className={clsx(
@@ -94,17 +93,20 @@ export function Header({
           </div>
 
           {/* Sign in / po zalogowaniu */}
-          
+
           <CartButton size="xxl" />
 
           {!loggedIn ? (
-            <Button size="xl" variant="fill" onClick={onLoginClick}>
+            <Button
+              size="xl"
+              variant="fill"
+              onClick={() => router.push("/auth/login")}
+            >
               Sign in
             </Button>
           ) : (
             <div className="flex items-center gap-4 md:gap-6">
-
-                   <button
+              <button
                 type="button"
                 className="flex items-center gap-2 bg-transparet hover:bg-muted/40 rounded-full p-2"
               >
@@ -119,7 +121,6 @@ export function Header({
           <nav className="flex items-center ml-0 lg:ml-[-20px]">
             <NavLink label="Home" href="/" />
             <NavLink label="Products" href="/products" />
-            <NavLink label="Contact" href="/contact" />
           </nav>
         </div>
 

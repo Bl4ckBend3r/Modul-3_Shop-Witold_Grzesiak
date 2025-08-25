@@ -1,57 +1,63 @@
-import Link from "next/link";
-import Image from "next/image";
+// CartContext.tsx
+"use client";
+import { createContext, useContext, useMemo, useState, PropsWithChildren } from "react";
+import type { Product } from "@/lib/types";
+import { useToast } from "../ToastContext";
 
-export type Category = {
-  id: string | number;
-  name: string;
-  slug: string;
-  image?: string | null; // ikona/obraz z bazy (/api/categories -> pole "image")
+type CartItem = { product: Product; qty: number };
+type Ctx = {
+  items: CartItem[];
+  add: (p: Product, qty?: number) => void;
+  inc: (id: string, step?: number) => void;
+  dec: (id: string, step?: number) => void;
+  setQty: (id: string, qty: number) => void;
+  remove: (id: string) => void;
+  clear: () => void;
 };
 
-type Props = {
-  category: Category;
-  href?: string; // opcjonalnie nadpisanie adresu
-};
+const CartCtx = createContext<Ctx | null>(null);
 
-export default function CategoryCard({ category, href }: Props) {
-  const targetHref = href ?? `/products?category=${encodeURIComponent(category.slug)}`;
-  const hasImage = !!(category.image && category.image.trim().length > 0);
-  const initial = category.name?.[0]?.toUpperCase() ?? "?";
+export function CartProvider({ children }: PropsWithChildren) {
+  const [items, setItems] = useState<CartItem[]>([]);
+  const { notify } = useToast();
 
-  return (
-    <Link
-      href={targetHref}
-      className="group rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 hover:shadow-lg transition-shadow bg-white/60 dark:bg-zinc-900/60"
-    >
-      <div className="flex flex-col items-center gap-4">
-        <div className="relative">
-          {hasImage ? (
-            <Image
-              src={category.image as string}
-              alt={category.name}
-              width={72}
-              height={72}
-              className="rounded-xl object-contain"
-            />
-          ) : (
-            <div
-              aria-hidden
-              className="h-[72px] w-[72px] rounded-xl grid place-items-center text-2xl font-semibold
-                         bg-gradient-to-br from-zinc-100 to-zinc-200
-                         dark:from-zinc-800 dark:to-zinc-700"
-            >
-              {initial}
-            </div>
-          )}
-          <span className="pointer-events-none absolute inset-0 rounded-xl ring-0 ring-indigo-400/0 group-hover:ring-2 transition" />
-        </div>
+  const add = (p: Product, qty = 1) => {
+    setItems(prev => {
+      const i = prev.findIndex(it => it.product.id === p.id);
+      if (i >= 0) {
+        const next = [...prev];
+        next[i] = { ...next[i], qty: next[i].qty + qty };
+        return next;
+      }
+      return [...prev, { product: p, qty }];
+    });
+    if (qty > 0) notify(`Dodano do koszyka: ${p.name}`);
+  };
 
-        <div className="text-center">
-          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-            {category.name}
-          </p>
-        </div>
-      </div>
-    </Link>
-  );
+  const setQty = (id: string, qty: number) =>
+    setItems(prev =>
+      prev.map(it => it.product.id === id ? { ...it, qty: Math.max(1, Math.min(99, Math.floor(qty || 1))) } : it)
+    );
+
+  const inc = (id: string, step = 1) =>
+    setItems(prev =>
+      prev.map(it => it.product.id === id ? { ...it, qty: Math.min(99, it.qty + Math.max(1, step)) } : it)
+    );
+
+  const dec = (id: string, step = 1) =>
+    setItems(prev =>
+      prev.map(it => it.product.id === id ? { ...it, qty: Math.max(1, it.qty - Math.max(1, step)) } : it)
+    );
+
+  const remove = (id: string) => setItems(prev => prev.filter(it => it.product.id !== id));
+  const clear = () => setItems([]);
+
+  const value = useMemo(() => ({ items, add, inc, dec, setQty, remove, clear }), [items]);
+  return <CartCtx.Provider value={value}>{children}</CartCtx.Provider>;
 }
+
+export const useCart = () => {
+  const ctx = useContext(CartCtx);
+  if (!ctx) throw new Error("CartProvider missing");
+  return ctx;
+};

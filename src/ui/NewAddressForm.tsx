@@ -17,7 +17,7 @@ export default function NewAddressForm({ onSaved }: Props) {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErr(null);
     setLoading(true);
@@ -39,8 +39,12 @@ export default function NewAddressForm({ onSaved }: Props) {
         throw new Error(msg || "Save failed");
       }
       onSaved?.();
-    } catch (error: any) {
-      setErr(error?.message ?? "Save failed");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setErr(error.message);
+      } else {
+        setErr("Save failed");
+      }
     } finally {
       setLoading(false);
     }
@@ -49,47 +53,47 @@ export default function NewAddressForm({ onSaved }: Props) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-8 w-full">
       {/* Grid 2×2 */}
-      <div className="retative grid grid-cols-2 gap-6 w-full">
-  <Dropdown
-    label="Country"
-    size="xl"
-    border="border"
-    value={country}
-    onChange={setCountry}
-    options={["Indonesia", "Poland", "Germany"]}
-    className="w-[400]"
-  />
+      <div className="relative grid grid-cols-2 gap-6 w-full">
+        <Dropdown
+          label="Country"
+          size="xl"
+          border="border"
+          value={country}
+          onChange={setCountry}
+          options={["Indonesia", "Poland", "Germany"]}
+          className="w-full"
+        />
 
-  <Dropdown
-    label="Province"
-    size="xxl"
-    border="border"
-    value={province}
-    onChange={setProvince}
-    options={["Jakarta", "West Java", "Mazowieckie"]}
-    className="w-full"
-  />
+        <Dropdown
+          label="Province"
+          size="xxl"
+          border="border"
+          value={province}
+          onChange={setProvince}
+          options={["Jakarta", "West Java", "Mazowieckie"]}
+          className="w-full"
+        />
 
-  <Dropdown
-    label="City"
-    size="xxl"
-    border="border"
-    value={city}
-    onChange={setCity}
-    options={["Jakarta", "Bandung", "Warsaw"]}
-    className="w-full"
-  />
+        <Dropdown
+          label="City"
+          size="xxl"
+          border="border"
+          value={city}
+          onChange={setCity}
+          options={["Jakarta", "Bandung", "Warsaw"]}
+          className="w-full"
+        />
 
-  <Dropdown
-    label="Postal Code"
-    size="xl"
-    border="border"
-    value={postal}
-    onChange={setPostal}
-    options={["10110", "40212", "00-001"]}
-    className="w-full"
-  />
-</div>
+        <Dropdown
+          label="Postal Code"
+          size="xl"
+          border="border"
+          value={postal}
+          onChange={setPostal}
+          options={["10110", "40212", "00-001"]}
+          className="w-full"
+        />
+      </div>
 
       {/* Complete Address */}
       <textarea

@@ -1,10 +1,10 @@
 // src/app/api/checkout/route.ts
 import { NextResponse } from "next/server";
 import { PrismaClient, Prisma, OrderStatus } from "@prisma/client";
-
+import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 
-export const prisma = new PrismaClient();
+// export const prisma = new PrismaClient();
 export const dynamic = "force-dynamic";
 
 // GET — zwraca konfigurację checkout (na razie mock, do podmiany na dane z DB)

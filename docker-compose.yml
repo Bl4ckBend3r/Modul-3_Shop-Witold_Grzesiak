@@ -1,23 +1,20 @@
-version: "3.9"
-
 services:
   db:
-    image: postgres:15
-    container_name: sklep_pg
+    image: postgres:16
+    container_name: sklep_postgres
     restart: unless-stopped
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: sklep_db
-    ports:
-      - "5433:5432"
+      POSTGRES_DB: sklep
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d sklep_db"]
-      interval: 2s
-      timeout: 2s
-      retries: 30
-
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sklep"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
 volumes:
-  pgdata:
+  pg_data:

@@ -30,7 +30,7 @@ async function getBase() {
   return `${proto}://${host}`;
 }
 
-export default async function ProductsPage({ searchParams }: Props) {
+export default async function ProductsPage({ searchParams }: any) {
   const base = await getBase();
 
   // Kategorie

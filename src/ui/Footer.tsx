@@ -1,5 +1,36 @@
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import cloudMap from "cloudinary-map.json";
 import Separator from "./Separator";
+
+type PaymentMethod = {
+  id: string;
+  slug: string;
+  name: string;
+  iconUrl?: string | null;
+};
+
+/** Ikony płatności z cloudinary-map.json */
+const PAYMENT_ICONS: Record<string, string> = (
+  cloudMap as Array<{ type: string; basenameSlug: string; secure_url: string }>
+)
+  .filter((x) => x.type === "payment")
+  .reduce((acc, x) => {
+    acc[x.basenameSlug] = x.secure_url;
+    return acc;
+  }, {} as Record<string, string>);
+
+/** alias slugów z DB -> slug w mapie */
+const PAYMENT_ALIAS: Record<string, string> = {
+  gpay: "googlepay",
+  mc: "mastercard",
+  visa: "visa",
+  paypal: "paypal",
+  applepay: "applepay",
+};
 
 const columns = [
   {
@@ -40,81 +71,100 @@ const columns = [
 ];
 
 export default function Footer() {
+  const [payments, setPayments] = useState<PaymentMethod[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/payments", { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = (await res.json()) as PaymentMethod[];
+        setPayments(data);
+      } catch {
+        setPayments([
+          { id: "fallback-visa", slug: "visa", name: "Visa" },
+          { id: "fallback-mc", slug: "mc", name: "Mastercard" },
+          { id: "fallback-paypal", slug: "paypal", name: "PayPal" },
+          { id: "fallback-applepay", slug: "applepay", name: "Apple Pay" },
+          { id: "fallback-gpay", slug: "gpay", name: "G Pay" },
+        ]);
+      }
+    })();
+  }, []);
+
   return (
-    <footer className="w-full bg-[#1a1a1a] ">
-      
-      <div
-        className="
-      mx-auto w-full max-w-[1440px]
-      px-6 sm:px-8 lg:px-[60px]
-      py-[clamp(48px,8vw,140px)]
-      pb-[clamp(48px,8vw,140px)] lg:pb-[clamp(64px,8vw,160px)] lg:pt-[clamp(64px,8vw,160px)] lg:py-[clamp(64px,8vw,160px)] lg:gap-6
-      
-    "
-      ><Separator></Separator>
-        <div className="pt-[140px] flex flex-col-2 pb-[140px] lg:flex-row lg:items-start lg:justify-between">
-          {/* LEWY BLOK: 531.75 x 214 */}
-          <div className="w-full  max-w-[531.75px] lg:basis-[531.75px] lg:shrink-0 ">
-            <div className="mb-3 text-2xl font-semibold tracking-[-0.01em] pb-[24px] text-[36px]">
-              <span className="text-[#EE701D]">Nexus</span>
-              <span className="text-neutral-900">Hub</span>
-            </div>
+   <footer className="w-full bg-[#222327] text-[#E7E7E7]">
+  <Separator />
 
-            <p className="text-sm leading-6 text-[#5D5D5D] text-[16px] pb-[24px]">
-              © 2023 NexusHub. All rights reserved.
-            </p>
-
-            {/* „Pigułki” płatności jak w makiecie */}
-            <div className="mt-4 flex flex-wrap items-center gap-[12px] h-[30px]">
-              {["VISA", "Mastercard", "PayPal", "GPay", "Apple Pay"].map(
-                (p) => (
-                  <span
-                    key={p}
-                    className="h-[30px] rounded-md border border-neutral-200 bg-white px-2.5 text-xs leading-[28px] text-neutral-700 shadow-sm"
-                  >
-                    {p}
-                  </span>
-                )
-              )}
-            </div>
-            <div className="h-[214px] hidden lg:block" aria-hidden />
-          </div>
-
-          {/* PRAWA CZĘŚĆ: 4 kolumny linków */}
-          <div className="w-full h-auto lg:h-[214px] lg:max-w-[848.25px]">
-  <div className="grid grid-cols-4 md:grid-cols-3 lg:grid-cols-4
-                  gap-x-6 gap-y-6 md:gap-x-8 md:gap-y-8 lg:gap-x-[48px] lg:gap-y-[32px]">
-    {columns.map((col) => (
-      <div key={col.title} className="min-w-[160px]">
-        {/* tytuł */}
-        <h4 className="text-[18px] pb-[24px] leading-[24px] md:text-[20px] md:leading-[26px]
-                       font-semibold text-neutral-900 mb-4 md:mb-[32px]">
-          {col.title}
-        </h4>
-
-        {/* linki */}
-        <ul className="list-none m-0 p-0 space-y-3 sm:space-y-4 lg:space-y-[32px]">
-          {col.links.map((link) => (
-            <li key={link.label}>
-              <Link
-                href={link.href}
-                className="block text-[14px] leading-[24px] sm:text-[16px] sm:leading-[26px]
-                           text-[#5D5D5D] hover:text-neutral-900"
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    ))}
-  </div>
-</div>
+  <div className="mx-auto max-w-[1440px] px-4 sm:px-8 lg:px-12 py-10 lg:py-16">
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8 lg:gap-12">
+      {/* LEWA KOLUMNA */}
+      <div className="flex flex-col gap-6">
+        <div className="text-2xl lg:text-3xl font-semibold tracking-[-0.01em]">
+          <span className="text-[#EE701D]">Nexus</span>
+          <span className="text-white">Hub</span>
         </div>
 
-        {/* delikatny separator jak w projekcie */}
-        <Separator></Separator>
+        <p className="text-sm lg:text-base">
+          © 2023 NexusHub. All rights reserved.
+        </p>
+
+        {/* Ikony płatności */}
+        <div className="flex flex-wrap gap-3">
+          {Object.entries(PAYMENT_ALIAS).map(([dbSlug, mapSlug]) => {
+            const match = payments.find((p) => p.slug === dbSlug);
+            const icon = match?.iconUrl ?? PAYMENT_ICONS[mapSlug] ?? null;
+
+            const name = match?.name ?? mapSlug;
+            return (
+              <span
+                key={dbSlug}
+                className="flex items-center justify-center h-8 w-12 rounded-md border border-[#383B42] bg-white shadow"
+                aria-label={name}
+              >
+                {icon ? (
+                  <Image
+                    src={icon}
+                    alt={name}
+                    width={32}
+                    height={16}
+                    unoptimized
+                    className="object-contain"
+                  />
+                ) : (
+                  <span className="text-xs text-neutral-700">{name}</span>
+                )}
+              </span>
+            );
+          })}
+        </div>
       </div>
-    </footer>
+
+      {/* MENU */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 mt-8 lg:mt-0">
+        {columns.map((col) => (
+          <div key={col.title}>
+            <h4 className="mb-4 text-lg font-semibold text-white">
+              {col.title}
+            </h4>
+            <ul className="space-y-3">
+              {col.links.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm lg:text-base text-[#E7E7E7] hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</footer>
+
   );
 }

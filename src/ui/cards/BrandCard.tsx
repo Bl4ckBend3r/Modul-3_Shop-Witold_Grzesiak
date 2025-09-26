@@ -1,4 +1,3 @@
-// ui/cards/BrandCard.tsx
 "use client";
 import Image from "next/image";
 import { Brand } from "@/lib/types";
@@ -6,19 +5,19 @@ import { Brand } from "@/lib/types";
 export default function BrandCard({ brand }: { brand: Brand }) {
   return (
     <div
-      className="w-[220px] h-[190px] shrink-0 box-border
-                 rounded-[6px] border border-[#616674]
-                 bg-[#262626] p-3
-                 flex flex-col items-center justify-center gap-7"
+      className="w-[220px] h-[190px] shrink-0 mx-auto
+                 flex flex-col justify-center items-center gap-6
+                 p-3 box-border
+                 bg-[#262626] border border-[#616674] rounded-[6px]"
     >
       {/* Logo */}
-      <div className="relative w-[160px] h-[72px]">
+      <div className="relative w-20 h-20 flex items-center justify-center">
         <Image
-          src={brand.imageUrl}   // <- URL z backendu
+          src={brand.imageUrl}
           alt={brand.name}
           fill
-          sizes="160px"
-          className="object-contain"
+          className="object-contain p-2"
+          sizes="80px"
         />
       </div>
 
@@ -29,4 +28,3 @@ export default function BrandCard({ brand }: { brand: Brand }) {
     </div>
   );
 }
-

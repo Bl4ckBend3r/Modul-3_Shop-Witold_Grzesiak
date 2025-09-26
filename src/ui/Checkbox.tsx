@@ -69,7 +69,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       <label
         htmlFor={id}
         className={clsx(
-          "inline-flex items-center select-none",
+          "inline-flex items-center select-none ",
           className
         )}
         style={{ gap: s.box.gap, height: s.rowH }}
@@ -102,7 +102,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             width: s.box.w,
             height: s.box.h,
             borderRadius: s.box.radius,
-            background: checked || indeterminate ? "#EE701D" : "#F7F8F8",
+            background: checked || indeterminate ? "#EE701D" : "#616674",
             border: checked || indeterminate ? "none" : `${s.box.borderWidth}px solid #8E95A2`,
           }}
         >
@@ -129,7 +129,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           <span
             className={clsx(
               s.label.className,
-              "font-['Inter'] text-[#262626]"
+              "font-['Inter'] text-white "
             )}
           >
             {label}

@@ -16,7 +16,7 @@ export default function CartButton({
       onClick={() => router.push("/cart")}
       aria-label={`Przejdź do koszyka. Pozycji: ${count}`}
       rightIcon={<CartIcon />}
-      variant="stroke"
+      variant="text"
       className="whitespace-nowrap"
     >
       {count > 0 ? `(${count})` : ""}

@@ -1,17 +1,26 @@
-// File: src/ui/CartContext.tsx
+//src/ui/cards/CartContext.tsx
 "use client";
-import { createContext, useContext, useMemo, useState, PropsWithChildren } from "react";
+
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useEffect,
+  PropsWithChildren,
+} from "react";
 import { Product } from "@/lib/types";
 import { useToast } from "../ToastContext";
+import { useSession } from "next-auth/react";
 
 type CartItem = { product: Product; qty: number };
 type Ctx = {
   items: CartItem[];
-  add: (p: Product, qty?: number) => void;
-  remove: (id: string) => void;
-  clear: () => void;
-  increase: (id: string) => void;
-  decrease: (id: string) => void;
+  add: (p: Product, qty?: number) => Promise<void>;
+  remove: (id: string) => Promise<void>;
+  clear: () => Promise<void>;
+  increase: (id: string) => Promise<void>;
+  decrease: (id: string) => Promise<void>;
 };
 
 const CartCtx = createContext<Ctx | null>(null);
@@ -19,40 +28,96 @@ const CartCtx = createContext<Ctx | null>(null);
 export function CartProvider({ children }: PropsWithChildren) {
   const [items, setItems] = useState<CartItem[]>([]);
   const { notify } = useToast();
+  const { data: session } = useSession();
 
-  const add = (p: Product, qty = 1) => {
-    setItems((prev) => {
-      const i = prev.findIndex((it) => it.product.id === p.id);
-      const next = [...prev];
-      if (i >= 0) next[i] = { ...next[i], qty: next[i].qty + qty };
-      else next.push({ product: p, qty });
-      return next;
-    });
-    notify(`Dodano do koszyka: ${p.name}`);
+  /** Pobierz userId z sesji */
+  const userId = session?.user?.id;
+
+  /** Odśwież koszyk z backendu */
+  const refresh = async () => {
+    const res = await fetch(`/api/cart${userId ? `?userId=${userId}` : ""}`);
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.items) {
+        setItems(
+          data.items.map((it: any) => ({
+            product: it.product,
+            qty: it.qty,
+          }))
+        );
+      } else {
+        setItems([]);
+      }
+    }
   };
 
-  const increase = (id: string) =>
-    setItems((prev) =>
-      prev.map((it) => (it.product.id === id ? { ...it, qty: it.qty + 1 } : it))
-    );
+  useEffect(() => {
+    refresh();
+  }, [userId]);
 
-  const decrease = (id: string) =>
-    setItems((prev) =>
-      prev
-        .map((it) =>
-          it.product.id === id ? { ...it, qty: Math.max(1, it.qty - 1) } : it
-        )
-        .filter((it) => it.qty > 0)
-    );
+  /** Dodaj produkt */
+  const add = async (p: Product, qty = 1) => {
+    try {
+      const res = await fetch("/api/cart/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, productId: p.id, qty }),
+      });
 
-  const remove = (id: string) =>
-    setItems((prev) => prev.filter((it) => it.product.id !== id));
+      if (!res.ok) throw new Error("Add to cart failed");
 
-  const clear = () => setItems([]);
+      await refresh();
+      notify(`Dodano do koszyka: ${p.name}`);
+    } catch (err) {
+      console.error("Cart add error:", err);
+      notify("Błąd przy dodawaniu do koszyka");
+    }
+  };
+
+  /** Zwiększ ilość */
+  const increase = async (id: string) => {
+    const item = items.find((it) => it.product.id === id);
+    if (item) {
+      await add(item.product, 1);
+    }
+  };
+
+  /** Zmniejsz ilość */
+  const decrease = async (id: string) => {
+    const res = await fetch("/api/cart/decrease", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, productId: id }),
+    });
+    if (res.ok) {
+      await refresh();
+    }
+  };
+
+  /** Usuń produkt */
+  const remove = async (id: string) => {
+    const res = await fetch("/api/cart/remove", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, productId: id }),
+    });
+    if (res.ok) {
+      await refresh();
+    }
+  };
+
+  /** Wyczyść koszyk */
+  const clear = async () => {
+    const res = await fetch("/api/cart/clear", { method: "POST" });
+    if (res.ok) {
+      await refresh();
+    }
+  };
 
   const value = useMemo(
     () => ({ items, add, remove, clear, increase, decrease }),
-    [items]
+    [items, userId]
   );
 
   return <CartCtx.Provider value={value}>{children}</CartCtx.Provider>;

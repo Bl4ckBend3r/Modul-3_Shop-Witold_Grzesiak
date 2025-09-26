@@ -3,9 +3,7 @@
 import { useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Checkbox } from "@/ui/Checkbox";
-import Toggle from "@/ui/Toggle";
 import InputField from "@/ui/InputField";
-import Slider from "@/ui/Slider";
 import Dropdown from "@/ui/Dropdown";
 import type { Category } from "@/lib/types";
 
@@ -15,7 +13,7 @@ type Props = {
     category?: string;
     priceMin?: string;
     priceMax?: string;
-    promoOnly?: string; // "1" | undefined
+    promoOnly?: string; 
     q?: string;
   };
 };
@@ -37,21 +35,6 @@ export default function FiltersSidebar({ categories, current }: Props) {
   const [q, setQ] = useState(current.q ?? "");
   const [min, setMin] = useState(current.priceMin ?? "");
   const [max, setMax] = useState(current.priceMax ?? "");
-
-  const apply = () => {
-    const next = new URLSearchParams(sp.toString());
-
-    const csv = Array.from(checked).join(",");
-    csv ? next.set("category", csv) : next.delete("category");
-
-    q ? next.set("q", q) : next.delete("q");
-    min ? next.set("priceMin", min) : next.delete("priceMin");
-    max ? next.set("priceMax", max) : next.delete("priceMax");
-    promo ? next.set("promoOnly", "1") : next.delete("promoOnly");
-
-    next.delete("page"); // reset paginacji przy zmianie filtrów
-    router.push(`${pathname}?${next.toString()}`);
-  };
 
   const updateFilters = (params: {
     category?: Set<string>;
@@ -96,11 +79,11 @@ export default function FiltersSidebar({ categories, current }: Props) {
   };
 
   return (
-    <aside className="flex flex-col items-center p-[40px] gap-[52px] w-[363px]  rounded-2xl bg-white text-black gap-y-[60]">
+    <aside className="flex flex-col items-center p-10 gap-12 w-[363px] rounded-2xl bg-[#1A1A1A] text-white">
       <div className="w-full flex items-center justify-between">
         <h2 className="text-lg font-semibold">Filtry</h2>
         <button
-          className="text-sm text-neutral-500 hover:text-neutral-800"
+          className="text-sm text-neutral-500 hover:text-white"
           onClick={clear}
         >
           Wyczyść
@@ -109,8 +92,8 @@ export default function FiltersSidebar({ categories, current }: Props) {
 
       {/* Kategorie */}
       <section className="w-full">
-        <h3 className="mb-3 text-sm font-medium text-neutral-700">Kategorie</h3>
-        <div className="flex flex-col gap-3">
+        <h3 className="mb-3 text-sm font-medium text-white">Kategorie</h3>
+        <div className="flex flex-col gap-3 mt-2 text-white">
           {categories.map((c) => {
             const isOn = checked.has(c.slug);
             return (
@@ -134,7 +117,7 @@ export default function FiltersSidebar({ categories, current }: Props) {
 
       {/* Cena (min/max) */}
       <section className="w-full">
-        <h3 className="mb-3 text-sm font-medium text-neutral-700">Cena</h3>
+        <h3 className="mb-3 text-sm font-medium text-white">Cena</h3>
         <div className="grid grid-cols-1 gap-3">
           <InputField
             size="xl"
@@ -178,27 +161,6 @@ export default function FiltersSidebar({ categories, current }: Props) {
             }
           />
         </div>
-        {/* opcjonalnie Slider UI – sam w sobie to layoutowy helper */}
-        <div className="mt-3">
-          <Slider>
-            <div className="w-[200px] bg-neutral-100 rounded h-2" />
-          </Slider>
-        </div>
-      </section>
-
-      {/* Promocje */}
-      <section className="w-full flex items-center justify-between">
-        <span className="text-sm font-medium text-neutral-700">
-          Tylko promocje
-        </span>
-        <Toggle
-          checked={promo}
-          onChange={(val) => {
-            setPromo(val);
-            updateFilters({ promo: val });
-          }}
-          size="m"
-        />
       </section>
     </aside>
   );

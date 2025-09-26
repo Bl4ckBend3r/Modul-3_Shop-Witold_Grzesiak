@@ -1,20 +1,20 @@
-import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import {prisma} from "@/lib/prisma";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { prisma } from "@/lib/prisma";
 import { compare } from "bcryptjs";
+import type { NextAuthOptions } from "next-auth";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   providers: [
-    Credentials({
+    CredentialsProvider({
       name: "Credentials",
       credentials: {
         identifier: { label: "Email or phone", type: "text" },
-        password:   { label: "Password", type: "password" },
+        password: { label: "Password", type: "password" },
       },
-      authorize: async (creds) => {
+      async authorize(creds) {
         const id = creds?.identifier?.trim();
         const pwd = creds?.password ?? "";
         if (!id || !pwd) return null;
@@ -37,16 +37,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.userId = user.id;
+      if (user) token.userId = (user as any).id;
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).id = token.userId;
+        (session.user as any).id = (token as any).userId;
       }
       return session;
     },
   },
-});
-
-export const { GET, POST } = handlers;
+};

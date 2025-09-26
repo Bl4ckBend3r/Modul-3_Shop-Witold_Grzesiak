@@ -1,18 +1,14 @@
-// ui/cards/ProductCard.tsx
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useCart } from "@/ui/cards/CartContext";
+import { useRouter } from "next/navigation";
 import { Product } from "@/lib/types";
 
 type Props = {
   p: Product;
-  /** opcjonalna stara cena (przekreślona) */
   oldPrice?: number;
-  /** waluta do formatowania (np. "USD", "PLN") */
   currency?: string;
-  /** locale do formatowania (np. "en-US", "pl-PL") */
   locale?: string;
 };
 
@@ -22,101 +18,79 @@ export default function ProductCard({
   currency = "USD",
   locale = "en-US",
 }: Props) {
-  const router = useRouter();
   const { add } = useCart();
+  const router = useRouter();
 
-  const goToDetails = () => router.push(`/products/${p.slug}`);
   const price = fmt(p.price, currency, locale);
 
   return (
     <div
       className="
-        box-border w-[300px] h-[386px]
-        flex flex-col items-start
-        gap-[18px] p-4 pb-5
-        rounded-[6px] border border-[#383B42]
-        bg-[#262626]
+        w-[300px] h-[386px]
+        flex flex-col gap-[18px]
+        bg-[#262626] border border-[#383B42] rounded-[6px]
+        p-4 pb-5
       "
-      role="group"
     >
-      {/* IMAGE 268×204 z białym tłem */}
-      <div className="relative w-[268px] h-[204px] isolate">
-        <div className="relative w-full h-full ml-[16] mt-[16] rounded-[6px] overflow-hidden bg-[white]">
-          <Image
-            src={p.imageUrl}
-            alt={p.name}
-            fill
-            sizes="300px"
-            className="object-contain"
-            onClick={goToDetails}
-          />
-        </div>
+      {/* IMAGE WRAPPER */}
+      <div className="relative w-[268px] h-[204px] rounded-[6px] bg-white overflow-hidden mx-auto">
+        <Image
+          src={p.imageUrl}
+          alt={p.name}
+          fill
+          className="object-contain"
+        />
 
-        {/* Koszyk – lewy górny róg */}
+        {/* Wishlist (ukryty domyślnie) */}
         <button
           type="button"
-          aria-label="Dodaj do koszyka"
+          className="absolute right-4 top-4 w-8 h-8 hidden items-center justify-center rounded-[6px] bg-[#262626]"
+        >
+          <HeartIcon />
+        </button>
+
+        {/* Cart */}
+        <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             add(p);
           }}
-          className="
-            absolute left-[32] top-[32] w-8 h-8
-            inline-flex items-center justify-center
-            rounded-[6px] bg-[#262626]
-            focus:outline-none focus:ring-2 focus:ring-[#EE701D]/40
-          "
+          className="absolute left-4 top-4 w-8 h-8 flex items-center justify-center rounded-[6px] bg-[#262626]"
         >
           <CartIcon />
         </button>
       </div>
 
-      {/* DETAILS 268×128 */}
-      <div className="flex flex-col items-start ml-[16] gap-[16] w-[268px] h-[128px]">
-        {/* Badge kategorii (36px wysokości) */}
-        {p.category?.name && (
-          <div className="flex flex-wrap items-start mt-[18]  gap-[10px] w-[268px] h-[36px]">
-            <span
-              className="
-                inline-flex items-center justify-center
-                h-[36px] rounded-[6px] px-[15px] py-[6px]
-                bg-[#E5610A] text-[#FDEDD7]
-                text-[14px] leading-[24px] font-medium
-              "
-            >
+      {/* DETAILS */}
+      <div className="flex flex-col gap-4 w-[268px] mx-auto">
+        {/* BADGES */}
+        <div className="flex flex-row flex-wrap gap-2 h-9">
+          {p.category?.name && (
+            <span className="px-[10px] py-[6px] rounded-md bg-[#E5610A] text-[#FDEDD7] text-sm font-medium">
               {p.category.name}
             </span>
-          </div>
-        )}
+          )}
+          {/* inne badge’y typu Bestseller / Cashback / Discount można dodać warunkowo */}
+        </div>
 
-        {/* Nazwa + cena */}
-        <div className="flex flex-col items-start gap-2 w-[268px] h-[76px]">
+        {/* TITLE + PRICE */}
+        <div className="flex flex-col gap-2">
           <h3
-            className="
-              w-[268px] h-[28px]
-              text-[18px] leading-[28px] font-[Inter] text-[Regular]
-              text-[#FCFCFC] line-clamp-1 cursor-pointer mb-[10]
-            "
-            onClick={goToDetails}
-            title={p.name}
+            onClick={() => router.push(`/products/${p.slug}`)}
+            className="text-[18px] leading-[28px] text-[#FCFCFC] font-normal line-clamp-1 cursor-pointer"
           >
             {p.name}
           </h3>
 
-          <div className="flex flex-row flex-wrap items-center gap-[10px] w-[268px] h-[40px]">
-            <div
-              className="
-                h-[40px] text-[28px] leading-[40px]
-                font-semibold tracking-[-0.01em] text-[#FCFCFC]
-              "
-            >
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="text-[28px] leading-[40px] font-semibold tracking-[-0.01em] text-[#FCFCFC]">
               {price}
-            </div>
-
+            </span>
             {typeof oldPrice === "number" && oldPrice > p.price && (
-              <div className="h-[28px] text-[18px] leading-[28px] text-[#E7E7E7] line-through">
+              <span className="text-[18px] leading-[28px] text-[#E7E7E7] line-through">
                 {fmt(oldPrice, currency, locale)}
-              </div>
+              </span>
             )}
           </div>
         </div>
@@ -125,7 +99,7 @@ export default function ProductCard({
   );
 }
 
-/* ===== helpers ===== */
+/* helper */
 function fmt(v: number, currency: string, locale: string) {
   try {
     return new Intl.NumberFormat(locale, {
@@ -139,10 +113,9 @@ function fmt(v: number, currency: string, locale: string) {
   }
 }
 
-/* Ikona koszyka 24×24, biała linia i kropki */
 function CartIcon() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
       <path
         d="M3 5h2l2 12h10l2-8H7"
         stroke="#FCFCFC"
@@ -152,6 +125,20 @@ function CartIcon() {
       />
       <circle cx="9" cy="19" r="1.5" fill="#FCFCFC" />
       <circle cx="17" cy="19" r="1.5" fill="#FCFCFC" />
+    </svg>
+  );
+}
+
+function HeartIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 21s-6.716-4.935-9.9-9.3C-1.083 6.45 3.134 1.5 7.8 4.2c2.063 1.2 4.2 4.8 4.2 4.8s2.138-3.6 4.2-4.8c4.666-2.7 8.883 2.25 5.7 7.5C18.716 16.065 12 21 12 21z"
+        stroke="#FCFCFC"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

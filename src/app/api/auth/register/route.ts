@@ -3,27 +3,32 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 
-const RegisterDTO = z.object({
-  email: z.string().email(),
-  phone: z.string().optional().nullable(),
-  password: z
-    .string()
-    .min(8)
-    .regex(/[A-Z]/, "Needs uppercase")
-    .regex(/[a-z]/, "Needs lowercase")
-    .regex(/[0-9]/, "Needs number"),
-  confirm: z.string(),
-  country: z.string().optional().nullable(), // ← user może wysłać, ale NIE zapisujemy do DB
-  agree: z.boolean(),
-})
-.refine((d) => d.password === d.confirm, { path: ["confirm"], message: "Passwords do not match." })
-.refine((d) => d.agree, { path: ["agree"], message: "Please accept the terms." });
+const RegisterDTO = z
+  .object({
+    email: z.string().email(),
+    phone: z.string().optional().nullable(),
+    password: z
+      .string()
+      .min(8)
+      .regex(/[A-Z]/, "Needs uppercase")
+      .regex(/[a-z]/, "Needs lowercase")
+      .regex(/[0-9]/, "Needs number"),
+    confirm: z.string(),
+    agree: z.boolean(),
+  })
+  .refine((d) => d.password === d.confirm, {
+    path: ["confirm"],
+    message: "Passwords do not match.",
+  })
+  .refine((d) => d.agree, {
+    path: ["agree"],
+    message: "Please accept the terms.",
+  });
 
 export async function POST(req: Request) {
   try {
     const json = await req.json();
 
-    // normalizacja telefonu (tylko cyfry; pusty => null)
     if (typeof json.phone === "string") {
       const digits = json.phone.replace(/[^\d]/g, "");
       json.phone = digits.length ? digits : null;
@@ -49,7 +54,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // sprawdź telefon (nie-unikatowy w schemacie => użyj findFirst + where)
+    // sprawdź telefon
     if (phone) {
       const phoneExists = await prisma.user.findFirst({ where: { phone } });
       if (phoneExists) {
@@ -60,24 +65,25 @@ export async function POST(req: Request) {
       }
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
-
-    // zbuduj dane CREATE tylko z polami istniejącymi w Twoim modelu
-    const data: any = {
-      email,
-      passwordHash,
-      ...(phone ? { phone } : {}),
-      // country POMIJAMY, bo nie ma tego pola w modelu User
-    };
+    const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
-      data,
+      data: {
+        email,
+        passwordHash,
+        firstName: "Guest",
+        lastName: "",
+        ...(phone ? { phone } : {}),
+      },
       select: { id: true, email: true },
     });
 
     return NextResponse.json({ ok: true, user }, { status: 201 });
   } catch (e) {
-    console.error(e);
-    return NextResponse.json({ ok: false, message: "Unexpected error." }, { status: 500 });
+    console.error("❌ Register error:", e);
+    return NextResponse.json(
+      { ok: false, message: "Unexpected error." },
+      { status: 500 }
+    );
   }
 }

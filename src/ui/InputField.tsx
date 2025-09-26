@@ -88,6 +88,7 @@ export default function InputField({
 
   className,
   id,
+  inputType = "text",
   ...rest
 }: Props) {
   const reactId = useId();
@@ -138,37 +139,61 @@ export default function InputField({
 
         <input
           id={controlId}
+          type={inputType}
           className={cx("bg-transparent text-neutral-100 placeholder-neutral-500 outline-none w-full", s.text)}
           style={{ paddingLeft: inputPaddingLeft, paddingRight: inputPaddingRight, height: s.h }}
           {...rest}
         />
 
-        {/* prawa część */}
-        {type === "leftButton" && (rightNode || rightText) && (
-          <div
-            className="shrink-0 h-full flex items-center justify-center border-l"
-            style={{
-              width: 106,                              // Figma
-              borderColor: C.line,
-              backgroundColor: C.bg,
-            }}
-          >
-            {rightNode ? (
-              rightNode
-            ) : (
-              <span className="inline-flex items-center gap-2">
-                <span className="text-[16px] leading-[26px] font-medium" style={{ color: rightTextColor(state, destructive) }}>
-                  {rightText}
-                </span>
-                {/* chevron */}
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
-                  <path d="M6 9l6 6 6-6" stroke={C.text} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </span>
-            )}
-          </div>
-        )}
-      </div>
+{/* prawa część */}
+{(rightNode || rightText) && (
+  <div
+    className={cx(
+      "shrink-0 h-full flex items-center justify-center",
+      type === "leftButton" ? "border-l" : ""
+    )}
+    style={{
+      width: type === "leftButton" ? 106 : "auto",
+      borderColor: type === "leftButton" ? C.line : "transparent",
+      backgroundColor: C.bg,
+      paddingRight: rightNode ? s.px : 0,
+      paddingLeft: rightText ? s.px : 0,
+    }}
+  >
+    {rightNode ? (
+      rightNode
+    ) : (
+      <span className="inline-flex items-center gap-2">
+        <span
+          className="text-[16px] leading-[26px] font-medium"
+          style={{ color: rightTextColor(state, destructive) }}
+        >
+          {rightText}
+        </span>
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden
+        >
+          <path
+            d="M6 9l6 6 6-6"
+            stroke={C.text}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+    )}
+  </div>
+)}
+
+
+
+
+</div>
 
       {helperText && (
         <p className={cx("mt-2", s.helper, destructive ? "text-[#E05816]" : "text-neutral-400")}>

@@ -8,6 +8,13 @@
   },
   {
     "type": "brand",
+    "filename": "ASUS Logo.png",
+    "basenameSlug": "asus",
+    "public_id": "brand/asus",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755825345/brand/asus.png"
+  },
+  {
+    "type": "brand",
     "filename": "JBL Logo.png",
     "basenameSlug": "jbl",
     "public_id": "brand/jbl",
@@ -42,39 +49,46 @@
     "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823723/brand/rog.png"
   },
   {
+    "type": "brand",
+    "filename": "SONY Logo.png",
+    "basenameSlug": "sony",
+    "public_id": "brand/sony",
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755825349/brand/sony.png"
+  },
+  {
     "type": "payment",
     "filename": "applepay.png",
     "basenameSlug": "applepay",
     "public_id": "payment/applepay",
-    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823724/payment/applepay.png"
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1758679344/payment/applepay.png"
   },
   {
     "type": "payment",
     "filename": "googlepay.png",
     "basenameSlug": "googlepay",
     "public_id": "payment/googlepay",
-    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823726/payment/googlepay.png"
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1758679345/payment/googlepay.png"
   },
   {
     "type": "payment",
-    "filename": "mastercard.png",
+    "filename": "Mastercard.png",
     "basenameSlug": "mastercard",
     "public_id": "payment/mastercard",
-    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823727/payment/mastercard.png"
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1758679345/payment/mastercard.png"
   },
   {
     "type": "payment",
-    "filename": "paypal.png",
+    "filename": "Paypal.png",
     "basenameSlug": "paypal",
     "public_id": "payment/paypal",
-    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823727/payment/paypal.png"
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1758679346/payment/paypal.png"
   },
   {
     "type": "payment",
-    "filename": "visa.png",
+    "filename": "Visa.png",
     "basenameSlug": "visa",
     "public_id": "payment/visa",
-    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1755823728/payment/visa.png"
+    "secure_url": "https://res.cloudinary.com/damzxycku/image/upload/v1758679347/payment/visa.png"
   },
   {
     "type": "products",

@@ -1,10 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Header from "@/ui/Header";
 import Footer from "@/ui/Footer";
-import { ToastProvider } from "@/ui/ToastContext";
-import { CartProvider } from "@/ui/cards/CartContext";
 import { Inter } from "next/font/google";
+import Providers from "./providers"; // ⬅️ ważne: import client wrappera
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -13,17 +12,37 @@ export const metadata: Metadata = {
   description: "Sklep internetowy",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="pl">
-      <body className={`${inter.variable} bg-white text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-50`}>
-        <ToastProvider>
-          <CartProvider>
-            <Header />
-            {children}
-            <Footer />
-          </CartProvider>
-        </ToastProvider>
+    <html lang="pl" className="h-full w-full bg-[#222327] overflow-x-hidden">
+      <head />
+      <body
+        className={`${inter.variable} min-h-screen w-full bg-[#222327] text-white antialiased`}
+      >
+        <Providers>
+          <div className="min-h-screen w-full flex flex-col">
+            <header className="w-full">
+              <Header />
+            </header>
+
+            <main className="flex-1 w-full flex justify-center bg-[#1A1A1A]">
+              <div className="w-full max-w-[2440px] px-4">{children}</div>
+            </main>
+
+            <footer className="w-full">
+              <Footer />
+            </footer>
+          </div>
+        </Providers>
       </body>
     </html>
   );

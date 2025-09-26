@@ -31,14 +31,14 @@ export default function TopToolbar() {
   };
 
   return (
-    <div className="mb-[20] flex items-center gap-6">
+    <div className="mb-[30] flex items-center gap-6">
       {/* Sort by */}
       <div className="flex items-center gap-[30]">
-        <span className="text-sm text-neutral-400">Sort by</span>
+        <span className="text- text-[#FCFCFC] text-[20px] font-semibold">Sort by</span>
         <div className="w-[140px] h-[40px]">
           <Dropdown
             embedded
-            size="m"
+            size="l"
             label="Latest"
             options={SORT_OPTIONS.map(o => o.label)}
             value={SORT_OPTIONS.find(o => o.value === currentSort)?.label}
@@ -46,23 +46,23 @@ export default function TopToolbar() {
               const value = SORT_OPTIONS.find(o => o.label === label)?.value ?? "latest";
               push({ sort: value });
             }}
-            className="w-full h-full "
+            className="w-full h-full border-[#616674] border-1 border-r-[1] bg-[#262626] rounded-[1rem] "
           />
         </div>
       </div>
 
       {/* Show */}
       <div className="flex items-center  gap-[30]">
-        <span className="text-sm text-neutral-400">Show</span>
+        <span className="text-sm text-[#FCFCFC] text-[20px] font-semibold">Show</span>
         <div className="w-[80px] h-[40px]">
           <Dropdown
             embedded
-            size="m"
+            size="l"
             label="9"
             options={PER_PAGE}
             value={currentPerPage}
             onChange={(val) => push({ perPage: val })}
-            className="w-full h-full"
+            className="w-full h-full border-[#616674] border-1 border-r-[1] bg-[#262626] rounded-[1rem]"
           />
         </div>
       </div>

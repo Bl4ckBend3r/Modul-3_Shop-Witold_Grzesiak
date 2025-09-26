@@ -5,38 +5,27 @@ import Input from "@/ui/InputField";
 import Avatar from "@/ui/Avatar";
 import Separator from "@/ui/Separator";
 import Link from "next/link";
-import { safeSrc } from "@/lib/safeSrc";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import CartButton from "@/ui/CartButton";
-
-import {
-  Bell,
-  Camera,
-  ChevronDown,
-  MessageSquare,
-  Plus,
-  Search as SearchIcon,
-  ShoppingCart,
-} from "lucide-react";
+import { Plus, Camera, Search as SearchIcon } from "lucide-react";
 import clsx from "clsx";
+import { useToast } from "@/ui/ToastContext";
+import { useSession } from "next-auth/react";
 
 type NavKey = "home" | "product" | "contact";
 
 export interface HeaderProps {
-  loggedIn?: boolean;
-  search?: string; // opcjonalne
-  onSearchChange?: (v: string) => void; // opcjonalne
+  search?: string;
+  onSearchChange?: (v: string) => void;
   onSearchSubmit?: () => void;
   activeNav?: NavKey;
   onNavClick?: (k: NavKey) => void;
   onLoginClick?: () => void;
   onAddressClick?: () => void;
-  avatarUrl?: string;
   className?: string;
 }
 
 export function Header({
-  loggedIn = false,
   search,
   onSearchChange,
   onSearchSubmit,
@@ -44,89 +33,113 @@ export function Header({
   onNavClick,
   onLoginClick,
   onAddressClick,
-  avatarUrl,
   className,
 }: HeaderProps) {
-  // ------ fallback dla opcjonalnych propsów ------
+  const { data: session } = useSession();
+  const loggedIn = !!session?.user;
+  const avatarUrl = session?.user?.image ?? undefined;
+
   const [internalSearch, setInternalSearch] = React.useState("");
-  const handleChange: (v: string) => void =
-    onSearchChange ?? ((v) => setInternalSearch(v));
+  const [loginToastShown, setLoginToastShown] = React.useState(false);
+  const handleChange = onSearchChange ?? ((v: string) => setInternalSearch(v));
   const value = search ?? internalSearch;
   const router = useRouter();
+  
+
+  const sp = useSearchParams();
+  const { notify } = useToast();
+
+  
+
+  React.useEffect(() => {
+    if (!loginToastShown && sp.get("login") === "success") {
+      notify("Logowanie udane");
+
+      const url = new URL(window.location.href);
+      url.searchParams.delete("login");
+      router.replace(url.pathname + url.search);
+
+      setLoginToastShown(true);
+    }
+  }, [sp, router, notify, loginToastShown]);
+
   return (
     <header
-      className={clsx(
-        "w-full h-auto px-5 pt-6 pb-6 sm:px-6 md:px-8",
-        "lg:w-[1440px] bg-[#1A1A1A] lg:h-[244px] lg:px-[40px] lg:pt-[40px] lg:pb-[40px]",
-        className
-      )}
-    >
-      <div className="mx-auto flex w-full max-w-[1360px] flex-col gap-6 md:gap-8 pb-6 lg:pb-[40px]">
-        {/* GÓRNY PASEK 54px */}
-        <div className="flex items-center pt-[40px] pb-[40px] justify-between gap-4 md:gap-6 lg:h-[54px]">
-          {/* Logo 159x44 */}
-          <div
-            className="flex h-[44px] w-[159px] items-center font-semibold leading-[400px]"
-            style={{
-              fontFamily: "Inter",
-              fontSize: 32,
-              letterSpacing: "-0.01em",
-            }}
-          >
+  className={clsx(
+    "flex flex-col justify-center items-start",
+    "px-4 sm:px-6 lg:px-[clamp(1rem,3vw,2.5rem)]",
+    "py-4 sm:py-6 lg:py-[clamp(1rem,3vh,2.5rem)]",
+    "gap-4 sm:gap-6 lg:gap-[clamp(1rem,4vh,2.5rem)]",
+    "w-full bg-[#1A1A1A]",
+    className
+  )}
+>
+  <div className="mx-auto w-full max-w-[70rem] flex flex-col gap-4 sm:gap-6 lg:gap-[clamp(1rem,3vh,2rem)] pb-4 sm:pb-6 lg:pb-[clamp(1rem,3vh,2.5rem)]">
+    {/* Top bar */}
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 lg:gap-[clamp(1rem,2vw,1.5rem)] w-full">
+      <Link href="/" aria-label="NexusHub" className="flex items-center">
+        <span
+        
+          className="text-[clamp(1.25rem,2vw,1.5rem)] font-semibold tracking-[-0.01em]"
+        >
+          <span className="lg:hidden">
+            <span className="text-[#EE701D]">N</span>
+            <span className="text-white">H</span>
+          </span>
+          <span className="hidden lg:inline pl-4">
             <span className="text-[#EE701D]">Nexus</span>
-            <span className="text-neutral-900">Hub</span>
-          </div>
+            <span className="text-white">Hub</span>
+          </span>
+        </span>
+      </Link>
 
-          {/* Search 793px → płynnie, a od lg wraca do 793 */}
-          <div className="w-full min-w-0 max-w-[793px] md:flex-1 lg:flex-none lg:w-[793px] ">
-            <Input
-              size="xl"
-              state="default"
-              type="stroke"
-              placeholder="Search"
-              leftIcon={<SearchIcon />}
-              value={value}
-              onChange={(e) => handleChange(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && onSearchSubmit?.()}
-              className="w-full"
-            />
-          </div>
-
-          {/* Sign in / po zalogowaniu */}
-
+      {!loggedIn ? (
+        <div className="flex flex-col sm:flex-row items-center gap-3">
           <CartButton size="xxl" />
-
-          {!loggedIn ? (
-            <Button
-              size="xl"
-              variant="fill"
-              onClick={() => router.push("/auth/login")}
-            >
-              Sign in
-            </Button>
-          ) : (
-            <div className="flex items-center gap-4 md:gap-6">
-              <button
-                type="button"
-                className="flex items-center gap-2 bg-transparet hover:bg-muted/40 rounded-full p-2"
-              >
-                <Avatar src={avatarUrl ?? undefined} size={45} />
-              </button>
-            </div>
-          )}
+          <Button
+            size="xl"
+            variant="fill"
+            className="w-full sm:w-auto"
+            onClick={() => router.push("/auth/login")}
+          >
+            Sign in
+          </Button>
         </div>
-
-        {/* NAWIGACJA 26px wysokości */}
-        <div className="flex h-[26px] items-center pb-[40px] justify-between mb-6 lg:mb-[40px] gap-4 lg:gap-6">
-          <nav className="flex items-center ml-0 lg:ml-[-20px]">
-            <NavLink label="Home" href="/" />
-            <NavLink label="Products" href="/products" />
-          </nav>
+      ) : (
+        <div className="flex items-center gap-4 sm:gap-6 lg:gap-[clamp(1rem,2vw,1.5rem)]">
+          <CartButton size="xxl" />
+          <Link
+            href="/profile"
+            aria-label="Open profile"
+            className="flex items-center gap-2 rounded-full p-2"
+          >
+            <Avatar src={avatarUrl} size={45} />
+          </Link>
         </div>
+      )}
+    </div>
 
-        <Separator />
-      </div>
-    </header>
+    {/* Nav */}
+<nav
+  className="
+    w-full max-w-[70rem]                     
+    flex flex-wrap items-center justify-start
+    gap-2 sm:gap-3
+    h-auto sm:h-[1.625rem] mb-4 sm:mb-6 lg:mb-[clamp(1rem,4vh,2.5rem)]
+  "
+>
+  <NavLink label="Home" href="/" />
+  <NavLink label="Products" href="/products" />
+  <NavLink label="Contact" href="/contact" />
+</nav>
+
+
+    
+    <div className="h-[0.01rem] bg-[#1A1A1A]" />
+  </div>
+  <Separator className="w-full" />
+</header>
+
   );
 }
 
@@ -142,8 +155,8 @@ function NavLink({ label, href }: { label: string; href: string }) {
       onClick={() => router.push(href)}
       aria-current={isActive ? "page" : undefined}
       className={clsx(
-        "h-[26px] px-0 bg-transparent hover:bg-transparent",
-        "text-[16px] leading-[26px] transition-colors duration-200",
+        "px-0 bg-transparent hover:bg-transparent",
+        "text-[1rem] leading-[1.625rem] transition-colors duration-200",
         "hover:text-[#F29145] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F29145]/50 rounded",
         isActive ? "text-[#F29145] font-semibold" : "text-[#B0B0B0] font-medium"
       )}
@@ -156,24 +169,9 @@ function NavLink({ label, href }: { label: string; href: string }) {
   );
 }
 
-function IconBtn({
-  children,
-  ...rest
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <Button
-      className="h-10 w-10 rounded-full bg-transparent hover:bg-muted/40"
-      {...rest}
-    >
-      {children}
-    </Button>
-  );
-}
-
-/* Opcjonalny toolbar ikon nad polem wejściowym */
 export function InputBarIcons() {
   return (
-    <div className="flex items-center gap-6 w-[72px] h-6">
+    <div className="flex items-center gap-[1.5rem] w-[4.5rem] h-[1.5rem]">
       <Button className="h-6 w-6 bg-transparent hover:bg-transparent p-0">
         <Plus className="h-6 w-6 text-[#6B7280]" />
       </Button>

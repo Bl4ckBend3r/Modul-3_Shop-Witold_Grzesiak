@@ -1,10 +1,14 @@
 -- CreateEnum
 CREATE TYPE "public"."OrderStatus" AS ENUM ('PENDING', 'PAID', 'SHIPPED', 'COMPLETED', 'CANCELED');
 
+-- CreateEnum
+CREATE TYPE "public"."CartStatus" AS ENUM ('OPEN', 'ORDERED', 'CANCELLED');
+
 -- CreateTable
 CREATE TABLE "public"."User" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "country" TEXT,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT,
     "passwordHash" TEXT NOT NULL,
@@ -60,11 +64,14 @@ CREATE TABLE "public"."Category" (
 -- CreateTable
 CREATE TABLE "public"."Product" (
     "id" TEXT NOT NULL,
+    "sku" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
+    "description" TEXT,
     "price" DECIMAL(10,2) NOT NULL,
     "stock" INTEGER NOT NULL,
     "imageUrl" TEXT NOT NULL,
+    "colors" TEXT[],
     "categoryId" TEXT NOT NULL,
     "brandId" TEXT,
     "soldCount" INTEGER NOT NULL DEFAULT 0,
@@ -120,11 +127,54 @@ CREATE TABLE "public"."OrderItem" (
     CONSTRAINT "OrderItem_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "public"."CartItem" (
+    "id" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "qty" INTEGER NOT NULL DEFAULT 1,
+    "selected" BOOLEAN NOT NULL DEFAULT true,
+    "cartId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "CartItem_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."Cart" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT,
+    "guestId" TEXT,
+    "status" "public"."CartStatus" NOT NULL DEFAULT 'OPEN',
+    "currency" TEXT NOT NULL DEFAULT 'USD',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Cart_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."Payment" (
+    "id" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "order" INTEGER,
+    "iconUrl" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Payment_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");
 
 -- CreateIndex
 CREATE INDEX "User_email_idx" ON "public"."User"("email");
+
+-- CreateIndex
+CREATE INDEX "Address_userId_idx" ON "public"."Address"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Brand_slug_key" ON "public"."Brand"("slug");
@@ -137,6 +187,9 @@ CREATE UNIQUE INDEX "Category_slug_key" ON "public"."Category"("slug");
 
 -- CreateIndex
 CREATE INDEX "Category_name_idx" ON "public"."Category"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Product_sku_key" ON "public"."Product"("sku");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Product_slug_key" ON "public"."Product"("slug");
@@ -168,6 +221,24 @@ CREATE INDEX "OrderItem_orderId_idx" ON "public"."OrderItem"("orderId");
 -- CreateIndex
 CREATE INDEX "OrderItem_productId_idx" ON "public"."OrderItem"("productId");
 
+-- CreateIndex
+CREATE INDEX "CartItem_cartId_idx" ON "public"."CartItem"("cartId");
+
+-- CreateIndex
+CREATE INDEX "CartItem_productId_idx" ON "public"."CartItem"("productId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "CartItem_cartId_productId_key" ON "public"."CartItem"("cartId", "productId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Cart_userId_key" ON "public"."Cart"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Cart_guestId_key" ON "public"."Cart"("guestId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Payment_slug_key" ON "public"."Payment"("slug");
+
 -- AddForeignKey
 ALTER TABLE "public"."Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -188,3 +259,12 @@ ALTER TABLE "public"."OrderItem" ADD CONSTRAINT "OrderItem_orderId_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "public"."OrderItem" ADD CONSTRAINT "OrderItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "public"."Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."CartItem" ADD CONSTRAINT "CartItem_cartId_fkey" FOREIGN KEY ("cartId") REFERENCES "public"."Cart"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."CartItem" ADD CONSTRAINT "CartItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "public"."Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Cart" ADD CONSTRAINT "Cart_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

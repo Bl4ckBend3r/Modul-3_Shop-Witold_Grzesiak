@@ -3,10 +3,10 @@ const fs = require("fs");
 const path = require("path");
 const { v2: cloudinary } = require("cloudinary");
 
-require("dotenv").config({ path: path.resolve(process.cwd(), ".env.local") });
+require("dotenv").config({ path: path.resolve(process.cwd(), ".env") });
 
 const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME?.trim();
-const API_KEY    = process.env.CLOUDINARY_API_KEY?.trim();
+const API_KEY = process.env.CLOUDINARY_API_KEY?.trim();
 const API_SECRET = process.env.CLOUDINARY_API_SECRET?.trim();
 
 if (!CLOUD_NAME || !API_KEY || !API_SECRET) {
@@ -14,15 +14,24 @@ if (!CLOUD_NAME || !API_KEY || !API_SECRET) {
   process.exit(1);
 }
 
-cloudinary.config({ cloud_name: CLOUD_NAME, api_key: API_KEY, api_secret: API_SECRET, secure: true });
+cloudinary.config({
+  cloud_name: CLOUD_NAME,
+  api_key: API_KEY,
+  api_secret: API_SECRET,
+  secure: true,
+});
 
 const IMAGES_DIR = path.resolve(process.cwd(), "images");
-const OUT_MAP = path.resolve(process.cwd(), "scripts/.cache/cloudinary-map.json");
+const OUT_MAP = path.resolve(
+  process.cwd(),
+  "../cloudinary-map.json"
+);
 const ALLOWED = new Set(["products", "brand", "payment"]);
 const exts = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg"]);
 
 const slug = (name) =>
-  name.normalize("NFKD")
+  name
+    .normalize("NFKD")
     .replace(/[^\w\s.-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/\./g, "-")
@@ -68,17 +77,23 @@ async function main() {
   console.log(`▶️  Upload ${entries.length} plików z ${IMAGES_DIR} ...`);
 
   const results = [];
-  let ok = 0, fail = 0;
+  let ok = 0,
+    fail = 0;
 
   for (const { type, filePath, filename } of entries) {
     const baseNoExt = path.basename(filename, path.extname(filename));
     // Dla brand: często nazwa w stylu "AOC Logo" → usuń "logo"
-    const basenameSlug = slug(baseNoExt.replace(/logo$/i, "").replace(/-logo$/i, "").trim());
+    const basenameSlug = slug(
+      baseNoExt
+        .replace(/logo$/i, "")
+        .replace(/-logo$/i, "")
+        .trim()
+    );
     const public_id = basenameSlug;
 
     try {
       const r = await cloudinary.uploader.upload(filePath, {
-        folder: type,                 // 'products' | 'brand' | 'payment'
+        folder: type, // 'products' | 'brand' | 'payment'
         public_id,
         use_filename: true,
         unique_filename: false,
@@ -86,13 +101,16 @@ async function main() {
         resource_type: "image",
       });
       console.log("✅", `${type}/${filename}`, "→", r.secure_url);
-      results.push({
-        type,
-        filename,
-        basenameSlug, // przyda się do dopasowania w DB
-        public_id: `${type}/${public_id}`,
-        secure_url: r.secure_url,
-      });
+      const cleanUrl = r.secure_url.replace(/\/v\d+\//, "/");
+
+results.push({
+  type,
+  filename,
+  basenameSlug,
+  public_id: `${type}/${public_id}`,
+  secure_url: cleanUrl, // zawsze bez wersji
+});
+
       ok++;
     } catch (e) {
       console.error("❌", `${type}/${filename}`, "=>", e?.message || e);

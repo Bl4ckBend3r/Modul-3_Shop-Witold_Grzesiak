@@ -39,49 +39,59 @@ export default function CartPage() {
   );
 
   return (
-    <main className="min-h-[542px] w-full bg-[#1B1B1B] text-white">
-      <div className="mx-auto max-w-[1440px] px-5 pt-6">
-        <Breadcrumb
-          items={[
-            { label: "Home", href: "/" },
-            { label: "Cart", href: "/cart" },
-          ]}
-        />
+<main className="min-h-[542px] w-full bg-[#1B1B1B] text-white">
+  <div>
+    <div className="mx-auto max-w-[1440px] px-5 pt-6">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Cart", href: "/cart" },
+        ]}
+      />
+    </div>
+
+    <section className="mx-auto my-6 flex flex-col lg:flex-row max-w-[1440px] gap-12 px-5 pb-10">
+      {/* left column */}
+      <div className="flex w-full max-w-[889px] flex-col gap-8">
+        <label className="flex items-center gap-4 text-white">
+          <Checkbox checked={allSelected} onChange={toggleAll} />
+          <span className="text-base font-medium leading-6">
+            Select All
+          </span>
+        </label>
+
+        <div className="flex flex-col gap-6">
+          {items.length === 0 ? (
+            <div className="rounded-md border border-[#383B42] bg-[#262626] p-6 text-[#E7E7E7]">
+              Your cart is empty.
+            </div>
+          ) : (
+            items.map((it) => (
+              <CartItem
+                key={it.product.id}
+                item={it}
+                selected={selectedIds.includes(it.product.id)}
+                onToggle={() => toggleOne(it.product.id)}
+                onInc={() => add(it.product, 1)}
+                onDec={() =>
+                  it.qty > 1
+                    ? add(it.product, -1 as unknown as number)
+                    : remove(it.product.id)
+                }
+                onRemove={() => remove(it.product.id)}
+              />
+            ))
+          )}
+        </div>
       </div>
 
-      <section className="mx-auto my-6 flex max-w-[1440px] gap-12 px-5 pb-10">
-        {/* left column */}
-        <div className="flex w-full max-w-[889px] flex-col gap-8">
-          <label className="flex items-center gap-4 text-white">
-            <Checkbox checked={allSelected} onChange={toggleAll} />
-            <span className="text-base font-medium leading-6">Select All</span>
-          </label>
-
-          <div className="flex flex-col gap-6">
-            {items.length === 0 ? (
-              <div className="rounded-md border border-[#383B42] bg-[#262626] p-6 text-[#E7E7E7]">
-                Your cart is empty.
-              </div>
-            ) : (
-              items.map((it) => (
-                <CartItem
-                  key={it.product.id}
-                  item={it}
-                  selected={selectedIds.includes(it.product.id)}
-                  onToggle={() => toggleOne(it.product.id)}
-                  onInc={() => add(it.product, 1)}
-                  onDec={() =>
-                    it.qty > 1 ? add(it.product, -1 as unknown as number) : remove(it.product.id)
-                  }
-                  onRemove={() => remove(it.product.id)}
-                />
-              ))
-            )}
-          </div>
-        </div>
-
+      {/* right column */}
+      <div>
         <CartSummary total={selectedTotal} count={count} />
-      </section>
-    </main>
+      </div>
+    </section>
+  </div>
+</main>
+
   );
 }

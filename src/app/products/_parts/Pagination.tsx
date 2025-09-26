@@ -52,7 +52,7 @@ export default function Pagination({ current, page, pages }: Props) {
             </button>
           );
         })}
-        {pages > 7 && <span className="text-neutral-500">…</span>}
+        {pages > 7 && <span className="text-[#F29145]">…</span>}
       </div>
     </div>
   );

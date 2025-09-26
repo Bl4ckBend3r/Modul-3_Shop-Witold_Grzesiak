@@ -32,7 +32,6 @@ export function useRegisterBreadcrumb(label: string, href?: string) {
     if (saved.current) return;
     const link = href ?? pathname ?? "/";
     const items = readHistory();
-    // usuń duplikaty tego samego href
     const without = items.filter((c) => c.href !== link);
     const next = [...without, { label, href: link }].slice(-12); // max 12 pozycji
     writeHistory(next);
@@ -70,7 +69,6 @@ export default function Breadcrumb({
   maxItems = 5,
   className,
 }: {
-  /** Możesz podać ręcznie; jeśli puste i mode='path' lub 'history' zadziałają automatycznie */
   items?: Crumb[];
   /** 'history' (domyślne) – z historii nawigacji; 'path' – z aktualnej ścieżki */
   mode?: Mode;
@@ -118,7 +116,7 @@ export default function Breadcrumb({
                   {c.label}
                 </Link>
               )}
-              {!isLast && <span className="text-neutral-600">/</span>}
+              {!isLast && <span className="text-neutral-600">&gt;</span>}
             </li>
           );
         })}

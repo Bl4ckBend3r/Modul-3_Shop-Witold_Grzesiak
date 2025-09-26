@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { RouteContext } from "next";
 import { prisma } from "@/lib/prisma"; 
 
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Record<string, string | string[]> }
 ) {
-  const { id } = context.params;
+  const id = context.params.id as string;
 
   console.log(">>> API /orders called with id:", id);
 

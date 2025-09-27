@@ -1,12 +1,14 @@
-// src/app/not-found.tsx
+// app/not-found.tsx
 export default function NotFound() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-[#1A1A1A] text-white">
-      <h1 className="text-5xl font-bold mb-4">404</h1>
-      <p className="text-lg mb-6">Strona nie została znaleziona.</p>
+    <main className="flex flex-col items-center justify-center min-h-screen bg-[#1A1A1A] text-white">
+      <h1 className="text-3xl font-bold mb-4">404 - Strona nie została znaleziona</h1>
+      <p className="mb-6 text-neutral-400">
+        Przepraszamy, nie mogliśmy znaleźć strony, której szukasz.
+      </p>
       <a
         href="/"
-        className="rounded-md bg-[#F29145] px-6 py-2 text-black font-medium hover:bg-[#ee701d]"
+        className="px-6 py-3 bg-[#F29145] text-white rounded-lg hover:bg-[#ee701d] transition"
       >
         Wróć na stronę główną
       </a>

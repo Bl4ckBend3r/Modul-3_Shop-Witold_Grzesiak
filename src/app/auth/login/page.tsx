@@ -1,6 +1,5 @@
-// src/app/auth/login/page.tsx
-import LoginCard from "@/ui/auth/LoginCard";
+import LoginCardWrapper from "@/ui/auth/LoginCardWrapper";
 
 export default function LoginPage() {
-  return <LoginCard standalone />;
+  return <LoginCardWrapper standalone />;
 }

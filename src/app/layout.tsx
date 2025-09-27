@@ -3,7 +3,8 @@ import "./globals.css";
 import Header from "@/ui/Header";
 import Footer from "@/ui/Footer";
 import { Inter } from "next/font/google";
-import Providers from "./providers"; 
+import Providers from "./providers";
+import { Suspense } from "react"; // ⬅️ dodaj to
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -31,7 +32,9 @@ export default function RootLayout({
         <Providers>
           <div className="min-h-screen w-full flex flex-col">
             <header className="w-full">
-              <Header />
+              <Suspense fallback={null}>
+                <Header />
+              </Suspense>
             </header>
 
             <main className="flex-1 w-full flex justify-center bg-[#1A1A1A]">

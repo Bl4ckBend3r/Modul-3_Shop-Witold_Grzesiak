@@ -2,7 +2,10 @@ import type { Brand, Category, Product } from "@/lib/types";
 
 const MODE = process.env.NEXT_PUBLIC_API_MODE ?? "mock"; // "mock" | "proxy" | "direct"
 const DIRECT = process.env.NEXT_PUBLIC_API_URL;       
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "";
+const SITE =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
 
 function base() {
   if (MODE === "mock")  return "/api";
@@ -16,9 +19,7 @@ function base() {
 
 // ZAWSZE budujemy bezwzględny URL (serwer tego wymaga)
 function absolute(urlOrPath: string) {
-  // jeśli już jest http/https – zostaw
   if (/^https?:\/\//.test(urlOrPath)) return urlOrPath;
-  // inaczej dobuduj origin na bazie SITE
   return new URL(urlOrPath, SITE).toString(); 
 }
 

@@ -1,11 +1,10 @@
 import type { Brand, Category, Product } from "@/lib/types";
 import { headers } from "next/headers";
 
-const MODE = process.env.NEXT_PUBLIC_API_MODE ?? "mock"; // "mock" | "proxy" | "direct"
+const MODE = process.env.NEXT_PUBLIC_API_MODE ?? "direct";
 const DIRECT = process.env.NEXT_PUBLIC_API_URL;
 
 async function getSite() {
-  // dynamiczne rozpoznanie hosta
   const h = await headers();
   const host =
     h.get("x-forwarded-host") ??
@@ -17,7 +16,7 @@ async function getSite() {
 }
 
 async function base() {
-  if (MODE === "mock") return "/api";
+  if (MODE === "mock") return ""; // 👈 wcześniej było "/api"
   if (MODE === "proxy") return "/api/proxy";
   if (!DIRECT || !/^https?:\/\//.test(DIRECT)) {
     return await getSite();
@@ -35,6 +34,7 @@ async function json<T>(path: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+// 👇 poprawione endpointy – już bez dodatkowego "/api" w argumencie
 export const getCategories = () => json<Category[]>("/api/categories");
 export const getBrands = () => json<Brand[]>("/api/brands");
 export const getRandomRecommendations = (limit = 6) =>

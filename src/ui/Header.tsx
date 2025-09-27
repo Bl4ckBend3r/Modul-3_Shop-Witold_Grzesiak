@@ -35,7 +35,8 @@ export function Header({
   onAddressClick,
   className,
 }: HeaderProps) {
-  const { data: session } = useSession();
+  const sessionRes = useSession();
+  const session = sessionRes?.data;
   const loggedIn = !!session?.user;
   const avatarUrl = session?.user?.image ?? undefined;
 
@@ -44,12 +45,9 @@ export function Header({
   const handleChange = onSearchChange ?? ((v: string) => setInternalSearch(v));
   const value = search ?? internalSearch;
   const router = useRouter();
-  
 
   const sp = useSearchParams();
   const { notify } = useToast();
-
-  
 
   React.useEffect(() => {
     if (!loginToastShown && sp.get("login") === "success") {
@@ -65,81 +63,75 @@ export function Header({
 
   return (
     <header
-  className={clsx(
-    "flex flex-col justify-center items-start",
-    "px-4 sm:px-6 lg:px-[clamp(1rem,3vw,2.5rem)]",
-    "py-4 sm:py-6 lg:py-[clamp(1rem,3vh,2.5rem)]",
-    "gap-4 sm:gap-6 lg:gap-[clamp(1rem,4vh,2.5rem)]",
-    "w-full bg-[#1A1A1A]",
-    className
-  )}
->
-  <div className="mx-auto w-full max-w-[70rem] flex flex-col gap-4 sm:gap-6 lg:gap-[clamp(1rem,3vh,2rem)] pb-4 sm:pb-6 lg:pb-[clamp(1rem,3vh,2.5rem)]">
-    {/* Top bar */}
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 lg:gap-[clamp(1rem,2vw,1.5rem)] w-full">
-      <Link href="/" aria-label="NexusHub" className="flex items-center">
-        <span
-        
-          className="text-[clamp(1.25rem,2vw,1.5rem)] font-semibold tracking-[-0.01em]"
-        >
-          <span className="lg:hidden">
-            <span className="text-[#EE701D]">N</span>
-            <span className="text-white">H</span>
-          </span>
-          <span className="hidden lg:inline pl-4">
-            <span className="text-[#EE701D]">Nexus</span>
-            <span className="text-white">Hub</span>
-          </span>
-        </span>
-      </Link>
-
-      {!loggedIn ? (
-        <div className="flex flex-col sm:flex-row items-center gap-3">
-          <CartButton size="xxl" />
-          <Button
-            size="xl"
-            variant="fill"
-            className="w-full sm:w-auto"
-            onClick={() => router.push("/auth/login")}
-          >
-            Sign in
-          </Button>
-        </div>
-      ) : (
-        <div className="flex items-center gap-4 sm:gap-6 lg:gap-[clamp(1rem,2vw,1.5rem)]">
-          <CartButton size="xxl" />
-          <Link
-            href="/profile"
-            aria-label="Open profile"
-            className="flex items-center gap-2 rounded-full p-2"
-          >
-            <Avatar src={avatarUrl} size={45} />
-          </Link>
-        </div>
+      className={clsx(
+        "flex flex-col justify-center items-start",
+        "px-4 sm:px-6 lg:px-[clamp(1rem,3vw,2.5rem)]",
+        "py-4 sm:py-6 lg:py-[clamp(1rem,3vh,2.5rem)]",
+        "gap-4 sm:gap-6 lg:gap-[clamp(1rem,4vh,2.5rem)]",
+        "w-full bg-[#1A1A1A]",
+        className
       )}
-    </div>
+    >
+      <div className="mx-auto w-full max-w-[70rem] flex flex-col gap-4 sm:gap-6 lg:gap-[clamp(1rem,3vh,2rem)] pb-4 sm:pb-6 lg:pb-[clamp(1rem,3vh,2.5rem)]">
+        {/* Top bar */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 lg:gap-[clamp(1rem,2vw,1.5rem)] w-full">
+          <Link href="/" aria-label="NexusHub" className="flex items-center">
+            <span className="text-[clamp(1.25rem,2vw,1.5rem)] font-semibold tracking-[-0.01em]">
+              <span className="lg:hidden">
+                <span className="text-[#EE701D]">N</span>
+                <span className="text-white">H</span>
+              </span>
+              <span className="hidden lg:inline pl-4">
+                <span className="text-[#EE701D]">Nexus</span>
+                <span className="text-white">Hub</span>
+              </span>
+            </span>
+          </Link>
 
-    {/* Nav */}
-<nav
-  className="
+          {!loggedIn ? (
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <CartButton size="xxl" />
+              <Button
+                size="xl"
+                variant="fill"
+                className="w-full sm:w-auto"
+                onClick={() => router.push("/auth/login")}
+              >
+                Sign in
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4 sm:gap-6 lg:gap-[clamp(1rem,2vw,1.5rem)]">
+              <CartButton size="xxl" />
+              <Link
+                href="/profile"
+                aria-label="Open profile"
+                className="flex items-center gap-2 rounded-full p-2"
+              >
+                <Avatar src={avatarUrl} size={45} />
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Nav */}
+        <nav
+          className="
     w-full max-w-[70rem]                     
     flex flex-wrap items-center justify-start
     gap-2 sm:gap-3
     h-auto sm:h-[1.625rem] mb-4 sm:mb-6 lg:mb-[clamp(1rem,4vh,2.5rem)]
   "
->
-  <NavLink label="Home" href="/" />
-  <NavLink label="Products" href="/products" />
-  <NavLink label="Contact" href="/contact" />
-</nav>
+        >
+          <NavLink label="Home" href="/" />
+          <NavLink label="Products" href="/products" />
+          <NavLink label="Contact" href="/contact" />
+        </nav>
 
-
-    
-    <div className="h-[0.01rem] bg-[#1A1A1A]" />
-  </div>
-  <Separator className="w-full" />
-</header>
-
+        <div className="h-[0.01rem] bg-[#1A1A1A]" />
+      </div>
+      <Separator className="w-full" />
+    </header>
   );
 }
 

@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 async function getCategories(): Promise<ApiCategory[]> {
   const res = await fetch("/api/categories", { cache: "no-store" });
   if (!res.ok) throw new Error("Nie udało się pobrać kategorii");
-  return (await res.json()).data;
+  return await res.json();
 }
 
 export default async function CategoriesPage() {

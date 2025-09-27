@@ -12,11 +12,10 @@ export async function GET() {
       name: true,
       slug: true,
       description: true,
-      image: true,      // w Twoim seederze to pole nazywa się `image`
+      image: true,      
     },
   });
 
-  // Jeżeli frontend oczekuje `imageUrl`:
   const data = rows.map(c => ({
     id: c.id,
     name: c.name,

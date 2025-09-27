@@ -2,7 +2,7 @@ import type { Brand, Category, Product } from "@/lib/types";
 
 const MODE = process.env.NEXT_PUBLIC_API_MODE ?? "mock"; // "mock" | "proxy" | "direct"
 const DIRECT = process.env.NEXT_PUBLIC_API_URL;       
-const SITE  = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"; 
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || "";
 
 function base() {
   if (MODE === "mock")  return "/api";

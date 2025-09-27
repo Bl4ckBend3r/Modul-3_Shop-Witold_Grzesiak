@@ -24,8 +24,7 @@ async function getBase() {
   const host =
     h.get("x-forwarded-host") ??
     h.get("host") ??
-    process.env.NEXT_PUBLIC_APP_HOST ??
-    "localhost:3000";
+    process.env.NEXT_PUBLIC_APP_HOST;
   const proto =
     h.get("x-forwarded-proto") ?? (process.env.VERCEL ? "https" : "http");
   return `${proto}://${host}`;

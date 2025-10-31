@@ -1,13 +1,5 @@
-// src/app/auth/login/page.tsx
-"use client";
-import { useRouter, useSearchParams } from "next/navigation";
-import LoginCard from "@/ui/auth/LoginCard";
-import { useRef } from "react";
-
-
-
+import LoginCardWrapper from "@/ui/auth/LoginCardWrapper";
 
 export default function LoginPage() {
-  return <LoginCard standalone />;
+  return <LoginCardWrapper standalone />;
 }
-

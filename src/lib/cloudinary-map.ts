@@ -1,22 +1,42 @@
-import mapJson from '../../cloudinary-map.json';
+// src/lib/cloudinary-map.ts
+import mapJson from "../../cloudinary-map.json";
 
-export const cloudMap = mapJson as Record<string, string>;
-
+// Budujemy słownik: filename -> secure_url
+export const cloudMap: Record<string, string> = (mapJson as any[]).reduce(
+  (acc, item) => {
+    if (item.filename && item.secure_url) {
+      acc[item.filename.toLowerCase()] = item.secure_url;
+    }
+    return acc;
+  },
+  {} as Record<string, string>
+);
 
 export function cld(src?: string | null): string | null {
   if (!src) return null;
-  if (cloudMap[src]) return cloudMap[src];
 
-  // Pozwala w danych podawać np. "aoc-24g2e" zamiast "aoc-24g2e.png"
-  const candidates = [`${src}.png`, `${src}.jpg`, `${src}.jpeg`, `${src}.webp`];
-  for (const c of candidates) if (cloudMap[c]) return cloudMap[c];
+  if (/^https?:\/\//i.test(src)) return src;
+
+  // bezpośrednie trafienie
+  if (cloudMap[src.toLowerCase()]) return cloudMap[src.toLowerCase()];
+
+  // sprawdzamy z rozszerzeniami
+  const candidates = [
+    `${src}.png`,
+    `${src}.jpg`,
+    `${src}.jpeg`,
+    `${src}.webp`,
+  ];
+  for (const c of candidates) {
+    const url = cloudMap[c.toLowerCase()];
+    if (url) return url;
+  }
 
   return null;
 }
-export function cdn(name: string): string | undefined {
 
-  return (mapJson as Record<string, string>)[name];
+export function cdn(name: string): string | undefined {
+  return cloudMap[name.toLowerCase()];
 }
 
-
-export default mapJson as Record<string, string>;
+export default cloudMap;

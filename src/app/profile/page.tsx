@@ -5,6 +5,8 @@ import { useSession, signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Breadcrumb from "@/ui/Breadcrumb";
 
+export const dynamic = "force-dynamic";
+
 type Order = {
   id: string;
   date: string;

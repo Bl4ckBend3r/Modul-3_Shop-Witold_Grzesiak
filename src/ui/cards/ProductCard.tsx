@@ -25,6 +25,7 @@ export default function ProductCard({
 
   return (
     <div
+    onClick={() => router.push(`/products/${p.slug}`)}
       className="
         w-[300px] h-[386px]
         flex flex-col gap-[18px]
@@ -77,7 +78,7 @@ export default function ProductCard({
         {/* TITLE + PRICE */}
         <div className="flex flex-col gap-2">
           <h3
-            onClick={() => router.push(`/products/${p.slug}`)}
+            
             className="text-[18px] leading-[28px] text-[#FCFCFC] font-normal line-clamp-1 cursor-pointer"
           >
             {p.name}

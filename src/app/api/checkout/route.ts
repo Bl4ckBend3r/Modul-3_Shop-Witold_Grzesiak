@@ -1,10 +1,9 @@
 // src/app/api/checkout/route.ts
 import { NextResponse } from "next/server";
-import { PrismaClient, Prisma, OrderStatus } from "@prisma/client";
-
+import { Prisma, OrderStatus } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 
-export const prisma = new PrismaClient();
 export const dynamic = "force-dynamic";
 
 // GET — zwraca konfigurację checkout (na razie mock, do podmiany na dane z DB)
@@ -41,19 +40,19 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const store = cookies();
+    const store = await cookies(); // 👈 ważne await
 
     const userId = body.userId ?? null;
     let cart;
 
     if (userId) {
-      // 🔹 spróbuj znaleźć koszyk przypisany do usera
+      // spróbuj znaleźć koszyk przypisany do usera
       cart = await prisma.cart.findFirst({
         where: { userId, status: "OPEN" },
         include: { items: { include: { product: true } } },
       });
     } else {
-      // 🔹 fallback: koszyk gościa
+      // fallback: koszyk gościa
       const guestId = store.get("guestId")?.value;
       if (!guestId) {
         return NextResponse.json(
@@ -82,7 +81,7 @@ export async function POST(req: Request) {
       0
     );
 
-    // 🔹 utwórz zamówienie
+    // utwórz zamówienie
     const order = await prisma.order.create({
       data: {
         status: OrderStatus.PENDING,
@@ -102,13 +101,13 @@ export async function POST(req: Request) {
           })),
         },
 
-        // 🔹 jeżeli user zalogowany → przypisz zamówienie do usera
+        // jeżeli user zalogowany → przypisz zamówienie do usera
         ...(userId ? { user: { connect: { id: userId } } } : {}),
       },
       include: { items: true },
     });
 
-    // 🔹 zamknij koszyk
+    // zamknij koszyk
     await prisma.cart.update({
       where: { id: cart.id },
       data: { status: "ORDERED" },
@@ -123,4 +122,3 @@ export async function POST(req: Request) {
     );
   }
 }
-

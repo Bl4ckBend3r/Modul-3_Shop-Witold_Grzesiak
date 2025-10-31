@@ -18,7 +18,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid productId" }, { status: 400 });
     }
 
-    const store = cookies();
+    const store = await cookies();
     let cart;
 
     /** ================= USER ================= */
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
           path: "/",
           maxAge: 60 * 60 * 24 * 30,
         });
-        return res;
+        return res; // 👈 ważne: reszta kodu nie wykona się
       }
     }
 

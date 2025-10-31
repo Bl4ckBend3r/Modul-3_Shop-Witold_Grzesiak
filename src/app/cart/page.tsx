@@ -7,6 +7,9 @@ import { useCart } from "@/ui/cards/CartContext";
 import CartItem from "@/app/cart/_parts/CartItem";
 import CartSummary from "@/app/cart/_parts/CartSummary";
 
+export const dynamic = "force-dynamic";
+
+
 export default function CartPage() {
   const { items, add, remove } = useCart();
 

@@ -18,19 +18,19 @@ type Props = {
 
 export const dynamic = "force-dynamic";
 
+
 async function getBase() {
   const h = await headers();
   const host =
     h.get("x-forwarded-host") ??
     h.get("host") ??
-    process.env.NEXT_PUBLIC_APP_HOST ??
-    "localhost:3000";
+    process.env.NEXT_PUBLIC_APP_HOST;
   const proto =
     h.get("x-forwarded-proto") ?? (process.env.VERCEL ? "https" : "http");
   return `${proto}://${host}`;
 }
 
-export default async function ProductsPage({ searchParams }: Props) {
+export default async function ProductsPage({ searchParams }: any) {
   const base = await getBase();
 
   // Kategorie

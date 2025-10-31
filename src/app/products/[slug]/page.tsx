@@ -1,9 +1,9 @@
+// src/app/products/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import ProductDetailClient from "@/app/products/_parts/ProductDetailClient";
 import Breadcrumb from "@/ui/Breadcrumb";
 
-// jeżeli chcesz zawsze SSR i brak cache
 export const dynamic = "force-dynamic";
 
 async function baseUrl() {
@@ -28,29 +28,22 @@ async function getData(slug: string) {
   };
 }
 
-export default async function ProductPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function ProductPage({ params }: any) {
   const data = await getData(params.slug);
   if (!data?.product) notFound();
 
   const { product, recommendations } = data;
 
   return (
-<main className="w-full overflow-x-clip bg-[#1A1A1A] text-white">
+    <main className="w-full overflow-x-clip bg-[#1A1A1A] text-white">
       <div className="w-full flex justify-center">
         <div className="w-full max-w-[1440px] px-4 md:px-8 lg:px-10 flex flex-col gap-8 mx-auto">
-          {/* Breadcrumb nad sekcją produktu */}
           <Breadcrumb
             items={[
               { label: "Products", href: "/products" },
               { label: product.name, href: `/products/${product.slug}` },
             ]}
           />
-
-          {/* Główna sekcja produktu */}
           <ProductDetailClient product={product} />
         </div>
       </div>

@@ -5,6 +5,9 @@ import BrandCard from "@/ui/cards/BrandCard";
 import CategoryGrid from "@/ui/components/CategoryGrid";
 import Carousel from "@/ui/Carousel";
 
+export const dynamic = "force-dynamic";
+
+
 const slides = [
   {
     id: 1,

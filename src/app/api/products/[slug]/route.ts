@@ -1,5 +1,5 @@
 // src/app/api/products/[slug]/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -14,22 +14,15 @@ function getRandomDeliveryDate() {
   return deliveryDate.toISOString();
 }
 
-export async function GET(
-  _req: Request,
-  { params }: { params: { slug: string } }
-) {
+export async function GET(_req: NextRequest, context: any) {
   try {
-    const { slug } = params;
+    const slug = context.params.slug as string;
 
     const product = await prisma.product.findUnique({
       where: { slug },
       include: {
         brand: true,
         category: true,
-        // images: true,
-        // variants: true,
-        // attributes: true,
-        // reviews: true,
       },
     });
 
@@ -48,13 +41,13 @@ export async function GET(
       {
         product: {
           ...product,
-          deliveryDate: getRandomDeliveryDate(), 
+          deliveryDate: getRandomDeliveryDate(),
         },
         recommendations,
       },
       { headers: { "Cache-Control": "no-store" } }
     );
-  } catch (e: any) {
+  } catch (e) {
     console.error("[GET /api/products/[slug]]", e);
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }

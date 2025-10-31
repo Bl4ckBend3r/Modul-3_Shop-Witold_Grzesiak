@@ -6,10 +6,12 @@ import { CartProvider } from "@/ui/cards/CartContext";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
-      <ToastProvider>
-        <CartProvider>{children}</CartProvider>
-      </ToastProvider>
-    </SessionProvider>
+
+      <SessionProvider>
+        <ToastProvider>
+          <CartProvider>{children}</CartProvider>
+        </ToastProvider>
+      </SessionProvider>
+
   );
 }
